@@ -17,6 +17,7 @@ import org.daisy.braille.css.BrailleCSSProperty.Padding;
 import org.daisy.braille.css.BrailleCSSProperty.Page;
 import org.daisy.braille.css.BrailleCSSProperty.StringSet;
 import org.daisy.braille.css.BrailleCSSProperty.TextIndent;
+import org.daisy.braille.css.BrailleCSSProperty.TextTransform;
 
 import cz.vutbr.web.css.CSSFactory;
 import cz.vutbr.web.css.CSSProperty;
@@ -279,6 +280,32 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
 		return genericOneIdentOrInteger(TextIndent.class, TextIndent.integer, false,
 				d, properties, values);
+	}
+	
+	@SuppressWarnings("unused")
+	private boolean processTextTransform(Declaration d,
+			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
+		
+		if (d.size() == 1 && genericOneIdent(TextTransform.class, d, properties))
+			return true;
+		
+		TermList list = tf.createList();
+		for (Term<?> t : d.asList()) {
+			if (t instanceof TermIdent) {
+				String value = ((TermIdent)t).getValue().toLowerCase();
+				if (!value.equals("auto"))
+					list.add(t);
+			}
+			else
+				return false;
+		}
+		
+		if (list.isEmpty())
+			return false;
+		
+		properties.put("text-transform", TextTransform.list_values);
+		values.put("text-transform", list);
+		return true;
 	}
 	
 	/****************************************************************

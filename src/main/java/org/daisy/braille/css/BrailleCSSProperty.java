@@ -239,4 +239,27 @@ public interface BrailleCSSProperty extends CSSProperty {
 			return text;
 		}
 	}
+	
+	public enum TextTransform implements BrailleCSSProperty {
+		list_values(""), AUTO("auto"), INHERIT("inherit");
+		
+		private String text;
+		
+		private TextTransform(String text) {
+			this.text = text;
+		}
+		
+		public boolean inherited() {
+			return false;
+		}
+		
+		public boolean equalsInherit() {
+			return this == INHERIT;
+		}
+		
+		@Override
+		public String toString() {
+			return text;
+		}
+	}
 }
