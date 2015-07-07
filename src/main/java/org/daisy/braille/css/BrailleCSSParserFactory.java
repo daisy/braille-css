@@ -7,9 +7,9 @@ import java.util.List;
 import cz.vutbr.web.css.CSSException;
 import cz.vutbr.web.css.CSSFactory;
 import cz.vutbr.web.css.MediaQuery;
+import cz.vutbr.web.css.NetworkProcessor;
 import cz.vutbr.web.css.RuleList;
 import cz.vutbr.web.css.StyleSheet;
-import cz.vutbr.web.csskit.PriorityStrategy;
 import cz.vutbr.web.csskit.antlr.CSSInputStream;
 import cz.vutbr.web.csskit.antlr.CSSParserFactory.SourceType;
 import cz.vutbr.web.csskit.antlr.CSSParserFactory;
@@ -29,24 +29,24 @@ import org.slf4j.LoggerFactory;
 public class BrailleCSSParserFactory extends CSSParserFactory {
 	
 	@Override
-	protected StyleSheet parseAndImport(Object source, String encoding, SourceType type,
-	                                           StyleSheet sheet, Preparator preparator,
-	                                           PriorityStrategy ps, URL base, List<MediaQuery> media)
+	protected StyleSheet parseAndImport(Object source, NetworkProcessor network, String encoding, SourceType type,
+	                                    StyleSheet sheet, Preparator preparator, URL base, List<MediaQuery> media)
 			throws CSSException, IOException {
-		BrailleCSSTreeParser parser = createTreeParser(source, encoding, type, preparator, base, media);
+		BrailleCSSTreeParser parser = createTreeParser(source, network, encoding, type, preparator, base, media);
 		parse(parser, type);
 		for (int i = 0; i < parser.getImportPaths().size(); i++) {
 			String path = parser.getImportPaths().get(i);
 			List<MediaQuery> imedia = parser.getImportMedia().get(i);
-			if (imedia == null || imedia.isEmpty() || CSSFactory.getAutoImportMedia().matchesOneOf(imedia)) {
+			if (((imedia == null || imedia.isEmpty()) && CSSFactory.getAutoImportMedia().matchesEmpty()) //no media query specified
+			    || CSSFactory.getAutoImportMedia().matchesOneOf(imedia)) { //or some media query matches to the autoload media spec
 				URL url = DataURLHandler.createURL(base, path);
 				try {
-					parseAndImport(url, encoding, SourceType.URL, sheet, preparator, ps, url, imedia); }
+					parseAndImport(url, network, encoding, SourceType.URL, sheet, preparator, url, imedia); }
 				catch (IOException e) {
 					log.warn("Couldn't read imported style sheet: {}", e.getMessage()); }}
 			else
 				log.trace("Skipping import {} (media not matching)", path); }
-		return addRulesToStyleSheet(parser.getRules(), sheet, ps);
+		return addRulesToStyleSheet(parser.getRules(), sheet);
 	}
 	
 	@Override
@@ -71,10 +71,10 @@ public class BrailleCSSParserFactory extends CSSParserFactory {
 			return null; }
 	}
 	
-	private static BrailleCSSTreeParser createTreeParser(Object source, String encoding, SourceType type,
+	private static BrailleCSSTreeParser createTreeParser(Object source, NetworkProcessor network, String encoding, SourceType type,
 	                                                     Preparator preparator, URL base, List<MediaQuery> media)
 			throws IOException, CSSException {
-		CSSInputStream input = getInput(source, encoding, type);
+		CSSInputStream input = getInput(source, network, encoding, type);
 		input.setBase(base);
 		CommonTokenStream tokens = feedLexer(input);
 		CommonTree ast = feedParser(tokens, type);
