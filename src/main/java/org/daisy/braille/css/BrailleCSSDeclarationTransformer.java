@@ -22,6 +22,7 @@ import org.daisy.braille.css.BrailleCSSProperty.WhiteSpace;
 
 import cz.vutbr.web.css.CSSFactory;
 import cz.vutbr.web.css.CSSProperty;
+import cz.vutbr.web.css.CSSProperty.GenericCSSPropertyProxy;
 import cz.vutbr.web.css.Declaration;
 import cz.vutbr.web.css.SupportedCSS;
 import cz.vutbr.web.css.Term;
@@ -57,16 +58,25 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 	public boolean parseDeclaration(Declaration d, Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
 		String property = d.getProperty().toLowerCase();
 		if (!css.isSupportedCSSProperty(property)) {
-			return false;
-		}
-		try {
-			Method m = methods.get(property);
-			if (m != null)
-				return (Boolean)m.invoke(this, d, properties, values);
-			else
-				return super.parseDeclaration(d, properties, values);
-		} catch (Exception e) {
-		}
+			if (property.startsWith("-")) {
+				// vendor extension
+				if (d.size() == 1) {
+					Term<?> term = d.get(0);
+					if (term instanceof TermIdent)
+						return genericProperty(GenericCSSPropertyProxy.class, (TermIdent)term,
+						                       true, properties, d.getProperty());
+				}
+			}
+		} else
+			try {
+				Method m = methods.get(property);
+				if (m != null)
+					return (Boolean)m.invoke(this, d, properties, values);
+				else
+					return super.parseDeclaration(d, properties, values);
+			} catch (Exception e) {
+			}
+		log.warn("Ignoring unsupported declaration: " + d);
 		return false;
 	}
 	
