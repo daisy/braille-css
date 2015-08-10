@@ -18,6 +18,7 @@ import org.daisy.braille.css.BrailleCSSProperty.Page;
 import org.daisy.braille.css.BrailleCSSProperty.StringSet;
 import org.daisy.braille.css.BrailleCSSProperty.TextIndent;
 import org.daisy.braille.css.BrailleCSSProperty.TextTransform;
+import org.daisy.braille.css.BrailleCSSProperty.WhiteSpace;
 
 import cz.vutbr.web.css.CSSFactory;
 import cz.vutbr.web.css.CSSProperty;
@@ -306,6 +307,12 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 		properties.put("text-transform", TextTransform.list_values);
 		values.put("text-transform", list);
 		return true;
+	}
+	
+	@SuppressWarnings("unused")
+	private boolean processWhiteSpace(Declaration d,
+			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
+		return genericOneIdent(WhiteSpace.class, d, properties);
 	}
 	
 	/****************************************************************

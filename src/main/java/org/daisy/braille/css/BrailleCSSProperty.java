@@ -262,4 +262,27 @@ public interface BrailleCSSProperty extends CSSProperty {
 			return text;
 		}
 	}
+	
+	public enum WhiteSpace implements BrailleCSSProperty {
+		NORMAL("normal"), PRE_WRAP("pre-wrap"), PRE_LINE("pre-line"), INHERIT("inherit");
+		
+		private String text;
+		
+		private WhiteSpace(String text) {
+			this.text = text;
+		}
+		
+		public boolean inherited() {
+			return true;
+		}
+		
+		public boolean equalsInherit() {
+			return this == INHERIT;
+		}
+		
+		@Override
+		public String toString() {
+			return text;
+		}
+	}
 }
