@@ -57,8 +57,6 @@ public class SupportedBrailleCSS implements SupportedCSS {
 	private Map<String, Integer> ordinals;
 	private Map<Integer, String> ordinalsRev;
 	
-	private Set<String> properties;
-	
 	private static SupportedBrailleCSS instance;
 	
 	public final static SupportedBrailleCSS getInstance() {
@@ -81,7 +79,7 @@ public class SupportedBrailleCSS implements SupportedCSS {
 	
 	@Override
 	public final boolean isSupportedCSSProperty(String property) {
-		return properties.contains(property);
+		return defaultCSSproperties.containsKey(property);
 	}
 	
 	@Override
@@ -129,97 +127,64 @@ public class SupportedBrailleCSS implements SupportedCSS {
 		Map<String, CSSProperty> props = new HashMap<String, CSSProperty>(TOTAL_SUPPORTED_DECLARATIONS, 1.0f);
 		Map<String, Term<?>> values = new HashMap<String, Term<?>>(TOTAL_SUPPORTED_DECLARATIONS, 1.0f);
 		
-		properties = new HashSet<String>();
-		
 		// text spacing
 		props.put("text-align", DEFAULT_UA_TEXT_ALIGN);
-		properties.add("text-align");
 		props.put("text-indent", TextIndent.integer);
 		values.put("text-indent", DEFAULT_UA_TEXT_IDENT);
-		properties.add("text-indent");
 		
 		// layout box
 		props.put("left", AbsoluteMargin.integer);
 		values.put("left", DEFAULT_UA_MARGIN);
-		properties.add("left");
 		props.put("right", AbsoluteMargin.integer);
 		values.put("right", DEFAULT_UA_MARGIN);
-		properties.add("right");
 		
 		props.put("margin", Margin.component_values);
-		properties.add("margin");
 		props.put("margin-top", Margin.integer);
 		values.put("margin-top", DEFAULT_UA_MARGIN);
-		properties.add("margin-top");
 		props.put("margin-right", Margin.integer);
 		values.put("margin-right", DEFAULT_UA_MARGIN);
-		properties.add("margin-right");
 		props.put("margin-bottom", Margin.integer);
 		values.put("margin-bottom", DEFAULT_UA_MARGIN);
-		properties.add("margin-bottom");
 		props.put("margin-left", Margin.integer);
 		values.put("margin-left", DEFAULT_UA_MARGIN);
-		properties.add("margin-left");
 
 		props.put("padding", Padding.component_values);
-		properties.add("padding");
 		props.put("padding-top", Padding.integer);
 		values.put("padding-top", DEFAULT_UA_PADDING);
-		properties.add("padding-top");
 		props.put("padding-right", Padding.integer);
 		values.put("padding-right", DEFAULT_UA_PADDING);
-		properties.add("padding-right");
 		props.put("padding-bottom", Padding.integer);
 		values.put("padding-bottom", DEFAULT_UA_PADDING);
-		properties.add("padding-bottom");
 		props.put("padding-left", Padding.integer);
 		values.put("padding-left", DEFAULT_UA_PADDING);
-		properties.add("padding-left");
 		
 		props.put("border", Border.component_values);
-		properties.add("border");
 		props.put("border-top", Border.NONE);
-		properties.add("border-top");
 		props.put("border-right", Border.NONE);
-		properties.add("border-right");
 		props.put("border-bottom", Border.NONE);
-		properties.add("border-bottom");
 		props.put("border-left", Border.NONE);
-		properties.add("border-left");
 		
 		// positioning
 		props.put("display", Display.INLINE);
-		properties.add("display");
 		
 		// elements
 		props.put("list-style-type", ListStyleType.NONE);
-		properties.add("list-style-type");
 		
 		// paged
 		props.put("page", Page.AUTO);
-		properties.add("page");
 		props.put("page-break-before", PageBreak.AUTO);
-		properties.add("page-break-before");
 		props.put("page-break-after", PageBreak.AUTO);
-		properties.add("page-break-after");
 		props.put("page-break-inside", PageBreakInside.AUTO);
-		properties.add("page-break-inside");
 		props.put("orphans", Orphans.integer);
 		values.put("orphans", DEFAULT_UA_ORPHANS);
-		properties.add("orphans");
 		props.put("widows", Widows.integer);
 		values.put("widows", DEFAULT_UA_WIDOWS);
-		properties.add("widows");
 		
 		// misc
 		props.put("counter-reset", CounterReset.NONE);
-		properties.add("counter-reset");
 		props.put("string-set", StringSet.NONE);
-		properties.add("string-set");
 		props.put("content", Content.NONE);
-		properties.add("content");
 		props.put("text-transform", TextTransform.AUTO);
-		properties.add("text-transform");
 		
 		this.defaultCSSproperties = props;
 		this.defaultCSSvalues = values;
