@@ -65,6 +65,9 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 					if (term instanceof TermIdent)
 						return genericProperty(GenericCSSPropertyProxy.class, (TermIdent)term,
 						                       true, properties, d.getProperty());
+					else if (term instanceof TermInteger)
+						return genericTerm(TermInteger.class, term, d.getProperty(),
+						                   null, false, properties, values);
 				}
 			}
 		} else
