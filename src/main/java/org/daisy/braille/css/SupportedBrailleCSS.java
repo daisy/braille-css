@@ -22,6 +22,7 @@ import org.daisy.braille.css.BrailleCSSProperty.AbsoluteMargin;
 import org.daisy.braille.css.BrailleCSSProperty.Border;
 import org.daisy.braille.css.BrailleCSSProperty.Content;
 import org.daisy.braille.css.BrailleCSSProperty.Display;
+import org.daisy.braille.css.BrailleCSSProperty.Hyphens;
 import org.daisy.braille.css.BrailleCSSProperty.ListStyleType;
 import org.daisy.braille.css.BrailleCSSProperty.Margin;
 import org.daisy.braille.css.BrailleCSSProperty.Padding;
@@ -41,7 +42,7 @@ public class SupportedBrailleCSS implements SupportedCSS {
 	
 	private static Logger log = LoggerFactory.getLogger(SupportedBrailleCSS.class);
 	
-	private static final int TOTAL_SUPPORTED_DECLARATIONS = 33;
+	private static final int TOTAL_SUPPORTED_DECLARATIONS = 34;
 	
 	private static final TermFactory tf = CSSFactory.getTermFactory();
 	
@@ -187,6 +188,7 @@ public class SupportedBrailleCSS implements SupportedCSS {
 		props.put("content", Content.NONE);
 		props.put("text-transform", TextTransform.AUTO);
 		props.put("white-space", WhiteSpace.NORMAL);
+		props.put("hyphens", Hyphens.MANUAL);
 		
 		this.defaultCSSproperties = props;
 		this.defaultCSSvalues = values;
