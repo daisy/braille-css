@@ -12,6 +12,7 @@ import org.daisy.braille.css.BrailleCSSProperty.Border;
 import org.daisy.braille.css.BrailleCSSProperty.Content;
 import org.daisy.braille.css.BrailleCSSProperty.Display;
 import org.daisy.braille.css.BrailleCSSProperty.Hyphens;
+import org.daisy.braille.css.BrailleCSSProperty.LineHeight;
 import org.daisy.braille.css.BrailleCSSProperty.ListStyleType;
 import org.daisy.braille.css.BrailleCSSProperty.Margin;
 import org.daisy.braille.css.BrailleCSSProperty.Padding;
@@ -167,6 +168,13 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 	private boolean processLeft(Declaration d,
 			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
 		return genericOneIdentOrInteger(AbsoluteMargin.class, AbsoluteMargin.integer, true,
+				d, properties, values);
+	}
+	
+	@SuppressWarnings("unused")
+	private boolean processLineHeight(Declaration d,
+			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
+		return genericOneIdentOrInteger(LineHeight.class, LineHeight.integer, true,
 				d, properties, values);
 	}
 	

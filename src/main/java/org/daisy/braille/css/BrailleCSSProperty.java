@@ -123,7 +123,30 @@ public interface BrailleCSSProperty extends CSSProperty {
 			return text;
 		}
 	}
+	
+	public enum LineHeight implements BrailleCSSProperty {
+		integer(""), INHERIT("inherit");
 
+		private String text;
+
+		private LineHeight(String text) {
+			this.text = text;
+		}
+
+		public boolean inherited() {
+			return true;
+		}
+
+		public boolean equalsInherit() {
+			return this == INHERIT;
+		}
+
+		@Override
+		public String toString() {
+			return text;
+		}
+	}
+	
 	public enum ListStyleType implements BrailleCSSProperty {
 		dot_pattern(""), DECIMAL("decimal"), LOWER_ALPHA("lower-alpha"), LOWER_ROMAN("lower-roman"),
 		NONE("none"), UPPER_ALPHA("upper-alpha"), UPPER_ROMAN("upper-roman"), INHERIT("inherit");

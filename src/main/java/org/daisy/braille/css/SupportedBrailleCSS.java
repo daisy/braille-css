@@ -23,6 +23,7 @@ import org.daisy.braille.css.BrailleCSSProperty.Border;
 import org.daisy.braille.css.BrailleCSSProperty.Content;
 import org.daisy.braille.css.BrailleCSSProperty.Display;
 import org.daisy.braille.css.BrailleCSSProperty.Hyphens;
+import org.daisy.braille.css.BrailleCSSProperty.LineHeight;
 import org.daisy.braille.css.BrailleCSSProperty.ListStyleType;
 import org.daisy.braille.css.BrailleCSSProperty.Margin;
 import org.daisy.braille.css.BrailleCSSProperty.Padding;
@@ -42,7 +43,7 @@ public class SupportedBrailleCSS implements SupportedCSS {
 	
 	private static Logger log = LoggerFactory.getLogger(SupportedBrailleCSS.class);
 	
-	private static final int TOTAL_SUPPORTED_DECLARATIONS = 34;
+	private static final int TOTAL_SUPPORTED_DECLARATIONS = 35;
 	
 	private static final TermFactory tf = CSSFactory.getTermFactory();
 	
@@ -52,6 +53,7 @@ public class SupportedBrailleCSS implements SupportedCSS {
 	private static final Term<?> DEFAULT_UA_PADDING = tf.createInteger(0);
 	private static final Term<?> DEFAULT_UA_ORPHANS = tf.createInteger(2);
 	private static final Term<?> DEFAULT_UA_WIDOWS = tf.createInteger(2);
+	private static final Term<?> DEFAULT_UA_LINE_HEIGHT = tf.createInteger(1);
 	
 	private Map<String, CSSProperty> defaultCSSproperties;
 	private Map<String, Term<?>> defaultCSSvalues;
@@ -133,6 +135,8 @@ public class SupportedBrailleCSS implements SupportedCSS {
 		props.put("text-align", DEFAULT_UA_TEXT_ALIGN);
 		props.put("text-indent", TextIndent.integer);
 		values.put("text-indent", DEFAULT_UA_TEXT_IDENT);
+		props.put("line-height", LineHeight.integer);
+		values.put("line-height", DEFAULT_UA_LINE_HEIGHT);
 		
 		// layout box
 		props.put("left", AbsoluteMargin.integer);
