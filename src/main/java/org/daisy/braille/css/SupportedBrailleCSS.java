@@ -8,7 +8,9 @@ import java.util.Set;
 
 import cz.vutbr.web.css.CSSFactory;
 import cz.vutbr.web.css.CSSProperty;
+import cz.vutbr.web.css.CSSProperty.CounterIncrement;
 import cz.vutbr.web.css.CSSProperty.CounterReset;
+import cz.vutbr.web.css.CSSProperty.CounterSet;
 import cz.vutbr.web.css.CSSProperty.Orphans;
 import cz.vutbr.web.css.CSSProperty.PageBreak;
 import cz.vutbr.web.css.CSSProperty.PageBreakInside;
@@ -43,7 +45,7 @@ public class SupportedBrailleCSS implements SupportedCSS {
 	
 	private static Logger log = LoggerFactory.getLogger(SupportedBrailleCSS.class);
 	
-	private static final int TOTAL_SUPPORTED_DECLARATIONS = 35;
+	private static final int TOTAL_SUPPORTED_DECLARATIONS = 37;
 	
 	private static final TermFactory tf = CSSFactory.getTermFactory();
 	
@@ -188,6 +190,8 @@ public class SupportedBrailleCSS implements SupportedCSS {
 		
 		// misc
 		props.put("counter-reset", CounterReset.NONE);
+		props.put("counter-set", CounterSet.NONE);
+		props.put("counter-increment", CounterIncrement.NONE);
 		props.put("string-set", StringSet.NONE);
 		props.put("content", Content.NONE);
 		props.put("text-transform", TextTransform.AUTO);
