@@ -55,7 +55,7 @@ public interface BrailleCSSProperty extends CSSProperty {
 	}
 
 	public enum Content implements BrailleCSSProperty {
-		list_values(""), NONE("none"), INHERIT("inherit");
+		content_list(""), NONE("none"), INHERIT("inherit");
 
 		private String text;
 
@@ -241,7 +241,7 @@ public interface BrailleCSSProperty extends CSSProperty {
 	}
 	
 	public enum StringSet implements BrailleCSSProperty {
-		content_list(""), NONE("none"), INHERIT("inherit");
+		list_values(""), NONE("none"), INHERIT("inherit");
 		
 		private String text;
 

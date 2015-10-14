@@ -32,6 +32,7 @@ import cz.vutbr.web.css.TermFunction;
 import cz.vutbr.web.css.TermIdent;
 import cz.vutbr.web.css.TermInteger;
 import cz.vutbr.web.css.TermList;
+import cz.vutbr.web.css.TermPair;
 import cz.vutbr.web.css.TermString;
 import cz.vutbr.web.domassign.DeclarationTransformer;
 import cz.vutbr.web.domassign.Repeater;
@@ -147,7 +148,7 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 		if (list.isEmpty())
 			return false;
 
-		properties.put("content", Content.list_values);
+		properties.put("content", Content.content_list);
 		values.put("content", list);
 		return true;
 	}
@@ -277,30 +278,44 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 			return true;
 		
 		final Set<String> validFuncNames = new HashSet<String>(Arrays.asList("content", "attr"));
+		
+		TermList list = tf.createList();
 		TermList contentList = tf.createList();
 		String stringName = null;
+		boolean first = true;
 		for (Term<?> t : d.asList()) {
 			if (stringName == null) {
 				if (t instanceof TermIdent)
 					stringName = ((TermIdent)t).getValue();
 				else
 					return false;
-			} else {
-				if (t instanceof TermString)
-					contentList.add(t);
-				else if (t instanceof TermFunction
-						&& validFuncNames.contains(((TermFunction)t).getFunctionName().toLowerCase()))
-					contentList.add(t);
-				else
+			} else if (t instanceof TermIdent) {
+				if (contentList.isEmpty())
 					return false;
-			}
+				TermPair pair = tf.createPair(stringName, contentList);
+				if (!first) pair.setOperator(Term.Operator.COMMA);
+				list.add(pair);
+				stringName = ((TermIdent)t).getValue();
+				contentList = tf.createList();
+				first = false;
+			} else if (t instanceof TermString)
+				contentList.add(t);
+			else if (t instanceof TermFunction
+			         && validFuncNames.contains(((TermFunction)t).getFunctionName().toLowerCase()))
+				contentList.add(t);
+			else
+				return false;
 		}
 		
 		if (contentList.isEmpty())
 			return false;
-
-		properties.put("string-set", StringSet.content_list);
-		values.put("string-set", tf.createPair(stringName, contentList));
+		TermPair pair = tf.createPair(stringName, contentList);
+		if (!first) pair.setOperator(Term.Operator.COMMA);
+		list.add(pair);
+		
+		properties.put("string-set", StringSet.list_values);
+		values.put("string-set", list);
+		
 		return true;
 	}
 	
