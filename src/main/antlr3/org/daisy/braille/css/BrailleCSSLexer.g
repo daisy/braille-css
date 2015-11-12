@@ -18,3 +18,8 @@ import CSSLexer;
 }
 
 VOLUME : '@volume' ;
+
+VOLUME_AREA
+    : '@begin'
+    | '@end'
+    ;

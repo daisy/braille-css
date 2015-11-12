@@ -13,6 +13,8 @@ import cz.vutbr.web.csskit.DefaultNetworkProcessor;
 import org.daisy.braille.css.BrailleCSSDeclarationTransformer;
 import org.daisy.braille.css.BrailleCSSParserFactory;
 import org.daisy.braille.css.RuleVolume;
+import org.daisy.braille.css.RuleVolumeArea;
+import org.daisy.braille.css.RuleVolumeArea.VolumeArea;
 import org.daisy.braille.css.SupportedBrailleCSS;
 
 import static org.junit.Assert.assertEquals;
@@ -22,7 +24,7 @@ import org.junit.Test;
 
 public class VolumesTest {
 	
-	public static final String SIMPLE_VOLUME_RULE = "@volume { max-length: 100; }";
+	public static final String SIMPLE_VOLUME_RULE = "@volume { max-length: 100; @begin { content: 'foo' } }";
 	
 	@Before
 	public void init() {
@@ -38,8 +40,14 @@ public class VolumesTest {
 		Rule<?> rule = sheet.get(0);
 		assertTrue(rule instanceof RuleVolume);
 		RuleVolume volumeRule = (RuleVolume)rule;
-		assertEquals(1, volumeRule.size());
-		Declaration decl = volumeRule.get(0);
+		assertEquals(2, volumeRule.size());
+		rule = volumeRule.get(0);
+		assertTrue(rule instanceof Declaration);
+		Declaration decl = (Declaration)rule;
 		assertEquals("max-length", decl.getProperty());
+		rule = volumeRule.get(1);
+		assertTrue(rule instanceof RuleVolumeArea);
+		RuleVolumeArea area = (RuleVolumeArea)rule;
+		assertEquals(VolumeArea.BEGIN, area.getVolumeArea());
 	}
 }

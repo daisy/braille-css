@@ -37,14 +37,33 @@ import org.slf4j.LoggerFactory;
         return gCSSTreeParser.getImportPaths();
     }
     
-    public RuleVolume prepareRuleVolume(List<Declaration> declarations, String pseudo, String pseudoFuncArg) {
-        if (declarations == null || declarations.isEmpty()) {
-            log.debug("Empty RuleVolume was ommited");
+    public RuleVolume prepareRuleVolume(List<Declaration> declarations,
+                                        List<RuleVolumeArea> volumeAreas,
+                                        String pseudo,
+                                        String pseudoFuncArg) {
+        if ((declarations == null || declarations.isEmpty()) &&
+	         (volumeAreas == null || volumeAreas.isEmpty())) {
+            log.debug("Empty RuleVolume was omited");
             return null; }
         RuleVolume rv = new RuleVolume(pseudo, pseudoFuncArg);
-        rv.replaceAll(declarations);
+        if (declarations != null)
+            for (Declaration d : declarations)
+                rv.add(d);
+        if (volumeAreas != null)
+            for (RuleVolumeArea a : volumeAreas)
+                rv.add(a);
         log.info("Create @volume as with:\n{}", rv);
         return rv;
+    }
+    
+    public RuleVolumeArea prepareRuleVolumeArea(String area, List<Declaration> declarations) {
+        if ((declarations == null || declarations.isEmpty())) {
+            log.debug("Empty RuleVolumeArea was omited");
+            return null; }
+        RuleVolumeArea rva = new RuleVolumeArea(area);
+        rva.replaceAll(declarations);
+        log.info("Create @" + area + " with:\n{}", rva);
+        return rva;
     }
 }
 
@@ -70,8 +89,32 @@ volume returns [RuleVolume stmnt]
              pseudoFuncArg = n.getText(); }
         )?
         decl=declarations
+        areas=volume_areas
       )
       {
-        $stmnt = prepareRuleVolume(decl, pseudo, pseudoFuncArg);
+        $stmnt = prepareRuleVolume(decl, areas, pseudo, pseudoFuncArg);
+      }
+    ;
+
+volume_areas returns [List<RuleVolumeArea> list]
+@init {
+    $list = new ArrayList<RuleVolumeArea>();
+}
+    : ^(SET
+        ( a=volume_area {
+            if (a!=null) {
+              list.add(a);
+              log.debug("Inserted volume area rule #{} into @volume", $list.size()+1);
+            }
+          }
+        )*
+      )
+    ;
+
+volume_area returns [RuleVolumeArea area]
+    : ^( a=VOLUME_AREA
+         decl=declarations )
+      {
+        $area = prepareRuleVolumeArea(a.getText().substring(1), decl);
       }
     ;
