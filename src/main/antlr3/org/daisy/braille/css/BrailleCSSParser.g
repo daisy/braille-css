@@ -16,4 +16,16 @@ import CSSParser;
     }
 }
 
-dummy : DUMMY ;
+unknown_atrule
+    : volume
+    | ATKEYWORD S* LCURLY any* RCURLY -> INVALID_ATSTATEMENT
+    ;
+
+volume
+    : VOLUME S* (volume_pseudo S*) ? LCURLY S* declarations RCURLY
+      -> ^(VOLUME volume_pseudo? declarations)
+    ;
+
+volume_pseudo
+    : pseudocolon^ ( IDENT | FUNCTION S!* ( NUMBER | INDEX ) S!* RPAREN! )
+    ;

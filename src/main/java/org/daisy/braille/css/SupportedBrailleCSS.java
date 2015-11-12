@@ -28,6 +28,8 @@ import org.daisy.braille.css.BrailleCSSProperty.Hyphens;
 import org.daisy.braille.css.BrailleCSSProperty.LineHeight;
 import org.daisy.braille.css.BrailleCSSProperty.ListStyleType;
 import org.daisy.braille.css.BrailleCSSProperty.Margin;
+import org.daisy.braille.css.BrailleCSSProperty.MaxLength;
+import org.daisy.braille.css.BrailleCSSProperty.MinLength;
 import org.daisy.braille.css.BrailleCSSProperty.Padding;
 import org.daisy.braille.css.BrailleCSSProperty.Page;
 import org.daisy.braille.css.BrailleCSSProperty.StringSet;
@@ -45,7 +47,7 @@ public class SupportedBrailleCSS implements SupportedCSS {
 	
 	private static Logger log = LoggerFactory.getLogger(SupportedBrailleCSS.class);
 	
-	private static final int TOTAL_SUPPORTED_DECLARATIONS = 37;
+	private static final int TOTAL_SUPPORTED_DECLARATIONS = 39;
 	
 	private static final TermFactory tf = CSSFactory.getTermFactory();
 	
@@ -187,6 +189,10 @@ public class SupportedBrailleCSS implements SupportedCSS {
 		values.put("orphans", DEFAULT_UA_ORPHANS);
 		props.put("widows", Widows.integer);
 		values.put("widows", DEFAULT_UA_WIDOWS);
+		
+		// volumes
+		props.put("min-length", MinLength.AUTO);
+		props.put("max-length", MaxLength.AUTO);
 		
 		// misc
 		props.put("counter-reset", CounterReset.NONE);

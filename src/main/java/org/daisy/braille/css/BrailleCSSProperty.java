@@ -193,6 +193,52 @@ public interface BrailleCSSProperty extends CSSProperty {
 			return text;
 		}
 	}
+	
+	public enum MinLength implements BrailleCSSProperty {
+		integer(""), AUTO("auto"), INHERIT("inherit");
+
+		private String text;
+
+		private MinLength(String text) {
+			this.text = text;
+		}
+
+		public boolean inherited() {
+			return false;
+		}
+
+		public boolean equalsInherit() {
+			return this == INHERIT;
+		}
+
+		@Override
+		public String toString() {
+			return text;
+		}
+	}
+	
+	public enum MaxLength implements BrailleCSSProperty {
+		integer(""), AUTO("auto"), INHERIT("inherit");
+
+		private String text;
+
+		private MaxLength(String text) {
+			this.text = text;
+		}
+
+		public boolean inherited() {
+			return false;
+		}
+
+		public boolean equalsInherit() {
+			return this == INHERIT;
+		}
+
+		@Override
+		public String toString() {
+			return text;
+		}
+	}
 
 	public enum Padding implements BrailleCSSProperty {
 		integer(""), component_values(""), INHERIT("inherit");

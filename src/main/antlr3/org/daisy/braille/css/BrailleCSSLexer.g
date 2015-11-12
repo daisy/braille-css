@@ -17,4 +17,4 @@ import CSSLexer;
     }
 }
 
-DUMMY: '@@dummy@@' ;
+VOLUME : '@volume' ;
