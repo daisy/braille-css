@@ -19,7 +19,7 @@ public class RuleVolumeArea extends AbstractRuleBlock<Declaration> implements Pr
 		}
 	}
 	
-	protected RuleVolumeArea(String area) {
+	public RuleVolumeArea(String area) {
 		super();
 		for (VolumeArea a : VolumeArea.values()) {
 			if (a.value.equals(area)) {

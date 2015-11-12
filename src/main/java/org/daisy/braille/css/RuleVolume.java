@@ -19,7 +19,7 @@ public class RuleVolume extends AbstractRuleBlock<Rule<?>> implements PrettyOutp
 	
 	protected String pseudo = null;
 	
-	protected RuleVolume(String pseudo, String pseudoFuncArg) {
+	public RuleVolume(String pseudo, String pseudoFuncArg) {
 		super();
 		replaceAll(new ArrayList<Rule<?>>());
 		if (pseudo != null) {
