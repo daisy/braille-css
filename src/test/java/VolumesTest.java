@@ -24,8 +24,6 @@ import org.junit.Test;
 
 public class VolumesTest {
 	
-	public static final String SIMPLE_VOLUME_RULE = "@volume { max-length: 100; @begin { content: 'foo' } }";
-	
 	@Before
 	public void init() {
 		CSSFactory.registerSupportedCSS(SupportedBrailleCSS.getInstance());
@@ -34,7 +32,58 @@ public class VolumesTest {
 	
 	@Test
 	public void testSimpleVolumeRule() throws IOException, CSSException {
-		StyleSheet sheet = new BrailleCSSParserFactory().parse(SIMPLE_VOLUME_RULE,
+		StyleSheet sheet = new BrailleCSSParserFactory().parse(
+			"@volume { max-length: 100; }",
+			new DefaultNetworkProcessor(), null, SourceType.EMBEDDED, new URL("file:///base/url/is/not/specified"));
+		assertEquals(1, sheet.size());
+		Rule<?> rule = sheet.get(0);
+		assertTrue(rule instanceof RuleVolume);
+		RuleVolume volumeRule = (RuleVolume)rule;
+		assertEquals(1, volumeRule.size());
+		rule = volumeRule.get(0);
+		assertTrue(rule instanceof Declaration);
+		Declaration decl = (Declaration)rule;
+		assertEquals("max-length", decl.getProperty());
+	}
+	
+	@Test
+	public void testFirstVolumeRule() throws IOException, CSSException {
+		StyleSheet sheet = new BrailleCSSParserFactory().parse(
+			"@volume:first { max-length: 100; }",
+			new DefaultNetworkProcessor(), null, SourceType.EMBEDDED, new URL("file:///base/url/is/not/specified"));
+		assertEquals(1, sheet.size());
+		Rule<?> rule = sheet.get(0);
+		assertTrue(rule instanceof RuleVolume);
+		RuleVolume volumeRule = (RuleVolume)rule;
+		assertEquals("first", volumeRule.getPseudo());
+		assertEquals(1, volumeRule.size());
+		rule = volumeRule.get(0);
+		assertTrue(rule instanceof Declaration);
+		Declaration decl = (Declaration)rule;
+		assertEquals("max-length", decl.getProperty());
+	}
+	
+	@Test
+	public void testNthVolumeRule() throws IOException, CSSException {
+		StyleSheet sheet = new BrailleCSSParserFactory().parse(
+			"@volume:nth(2) { max-length: 100; }",
+			new DefaultNetworkProcessor(), null, SourceType.EMBEDDED, new URL("file:///base/url/is/not/specified"));
+		assertEquals(1, sheet.size());
+		Rule<?> rule = sheet.get(0);
+		assertTrue(rule instanceof RuleVolume);
+		RuleVolume volumeRule = (RuleVolume)rule;
+		assertEquals("nth(2)", volumeRule.getPseudo());
+		assertEquals(1, volumeRule.size());
+		rule = volumeRule.get(0);
+		assertTrue(rule instanceof Declaration);
+		Declaration decl = (Declaration)rule;
+		assertEquals("max-length", decl.getProperty());
+	}
+	
+	@Test
+	public void testVolumeRuleWithBeginArea() throws IOException, CSSException {
+		StyleSheet sheet = new BrailleCSSParserFactory().parse(
+			"@volume { max-length: 100; @begin { content: 'foo' } }",
 			new DefaultNetworkProcessor(), null, SourceType.EMBEDDED, new URL("file:///base/url/is/not/specified"));
 		assertEquals(1, sheet.size());
 		Rule<?> rule = sheet.get(0);

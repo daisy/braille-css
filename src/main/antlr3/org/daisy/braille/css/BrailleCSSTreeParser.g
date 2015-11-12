@@ -79,12 +79,9 @@ volume returns [RuleVolume stmnt]
     String pseudoFuncArg = null;
 }
     : ^(VOLUME
-        ( ^(PSEUDO i=IDENT)
+        ( ^(PSEUDOCLASS i=IDENT)
            { pseudo = i.getText(); }
-        | ^(PSEUDO f=FUNCTION n=NUMBER)
-           { pseudo = f.getText();
-             pseudoFuncArg = n.getText(); }
-        | ^(PSEUDO f=FUNCTION n=INDEX)
+        | ^(PSEUDOCLASS f=FUNCTION n=NUMBER)
            { pseudo = f.getText();
              pseudoFuncArg = n.getText(); }
         )?

@@ -22,12 +22,12 @@ unknown_atrule
     ;
 
 volume
-    : VOLUME S* (volume_pseudo S*) ? LCURLY S* declarations volume_area* RCURLY
+    : VOLUME volume_pseudo? S* LCURLY S* declarations volume_area* RCURLY
       -> ^(VOLUME volume_pseudo? declarations ^(SET volume_area*))
     ;
 
 volume_pseudo
-    : pseudocolon^ ( IDENT | FUNCTION S!* ( NUMBER | INDEX ) S!* RPAREN! )
+    : pseudocolon^ ( IDENT | FUNCTION S!* NUMBER S!* RPAREN! )
     ;
 
 volume_area
