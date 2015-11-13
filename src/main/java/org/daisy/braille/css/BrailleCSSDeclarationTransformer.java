@@ -135,7 +135,7 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 			return true;
 		
 		final Set<String> validFuncNames = new HashSet<String>(Arrays.asList(
-				"content", "attr", "target-text", "target-string", "target-counter", "leader"));
+				"content", "attr", "target-text", "target-string", "target-counter", "leader", "flow"));
 		
 		TermList list = tf.createList();
 		for (Term<?> t : d.asList()) {
