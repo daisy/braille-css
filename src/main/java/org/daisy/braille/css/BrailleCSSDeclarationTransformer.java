@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.Set;
 
 import org.daisy.braille.css.BrailleCSSProperty.AbsoluteMargin;
@@ -127,6 +128,11 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 		return r.repeatOverFourTermDeclaration(d, properties, values);
 	}
 	
+	private final static Set<String> validContentFuncNames
+	= new HashSet<String>(Arrays.asList("content", "attr", "target-text", "target-string", "target-counter", "leader", "flow"));
+	
+	private final static Pattern customContentFuncName = Pattern.compile("^-.*"); // is the rest handled in ANTLR?
+	
 	@SuppressWarnings("unused")
 	private boolean processContent(Declaration d,
 			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
@@ -134,16 +140,17 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 		if (d.size() == 1 && genericOneIdent(Content.class, d, properties))
 			return true;
 		
-		final Set<String> validFuncNames = new HashSet<String>(Arrays.asList(
-				"content", "attr", "target-text", "target-string", "target-counter", "leader", "flow"));
-		
 		TermList list = tf.createList();
 		for (Term<?> t : d.asList()) {
 			if (t instanceof TermString)
 				list.add(t);
-			else if (t instanceof TermFunction
-			         && validFuncNames.contains(((TermFunction)t).getFunctionName().toLowerCase()))
-				list.add(t);
+			else if (t instanceof TermFunction) {
+				String funcName = ((TermFunction)t).getFunctionName();
+				if (validContentFuncNames.contains(funcName.toLowerCase())
+				    || customContentFuncName.matcher(funcName).matches())
+					list.add(t);
+				else
+					return false; }
 			else
 				return false;
 		}
@@ -155,10 +162,23 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 		return true;
 	}
 	
+	private final static Pattern customDisplayIdent = Pattern.compile("^-.*"); // is the rest handled in ANTLR?
+	
 	@SuppressWarnings("unused")
 	private boolean processDisplay(Declaration d,
 			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
-		return genericOneIdent(Display.class, d, properties);
+		if (d.size() != 1)
+			return false;
+		Term t = d.get(0);
+		String prop = d.getProperty();
+		if (genericTermIdent(Display.class, t, ALLOW_INH, prop, properties))
+			return true;
+		if (t instanceof TermIdent) {
+			if (customDisplayIdent.matcher(((TermIdent)t).getValue()).matches()) {
+				properties.put(prop, Display.custom);
+				values.put(prop, t);
+				return true; }}
+		return false;
 	}
 	
 	@SuppressWarnings("unused")
