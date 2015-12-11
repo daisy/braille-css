@@ -13,7 +13,6 @@ import cz.vutbr.web.css.StyleSheet;
 import cz.vutbr.web.csskit.antlr.CSSInputStream;
 import cz.vutbr.web.csskit.antlr.CSSParserFactory.SourceType;
 import cz.vutbr.web.csskit.antlr.CSSParserFactory;
-import cz.vutbr.web.csskit.antlr.Preparator;
 import cz.vutbr.web.csskit.antlr.TreeUtil;
 
 import org.antlr.runtime.CommonTokenStream;
@@ -26,11 +25,29 @@ import org.fit.net.DataURLHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.w3c.dom.Element;
+
 public class BrailleCSSParserFactory extends CSSParserFactory {
 	
 	@Override
-	protected StyleSheet parseAndImport(Object source, NetworkProcessor network, String encoding, SourceType type,
-	                                    StyleSheet sheet, Preparator preparator, URL base, List<MediaQuery> media)
+	public StyleSheet parse(Object source, NetworkProcessor network, String encoding, SourceType type,
+	                        Element inline, boolean inlinePriority, URL base) throws IOException, CSSException {
+		StyleSheet sheet = (StyleSheet) CSSFactory.getRuleFactory().createStyleSheet().unlock();
+		Preparator preparator = new Preparator(inline, inlinePriority);
+		StyleSheet ret = parseAndImport(source, network, encoding, type, sheet, preparator, base, null);
+		return ret;
+	}
+	
+	@Override
+	public StyleSheet append(Object source, NetworkProcessor network, String encoding, SourceType type,
+	                         Element inline, boolean inlinePriority, StyleSheet sheet, URL base) throws IOException, CSSException {
+		Preparator preparator = new Preparator(inline, inlinePriority);
+		StyleSheet ret = parseAndImport(source, network, encoding, type, sheet, preparator, base, null);
+		return ret;
+	}
+	
+	private StyleSheet parseAndImport(Object source, NetworkProcessor network, String encoding, SourceType type,
+	                                  StyleSheet sheet, Preparator preparator, URL base, List<MediaQuery> media)
 			throws CSSException, IOException {
 		BrailleCSSTreeParser parser = createTreeParser(source, network, encoding, type, preparator, base, media);
 		parse(parser, type);

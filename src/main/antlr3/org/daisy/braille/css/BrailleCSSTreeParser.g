@@ -13,7 +13,6 @@ import cz.vutbr.web.css.Declaration;
 import cz.vutbr.web.css.MediaQuery;
 import cz.vutbr.web.css.RuleBlock;
 import cz.vutbr.web.css.RuleList;
-import cz.vutbr.web.csskit.antlr.Preparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 }
@@ -21,8 +20,11 @@ import org.slf4j.LoggerFactory;
 @members {
     private static Logger log = LoggerFactory.getLogger(BrailleCSSTreeParser.class);
     
+    private Preparator preparator;
+    
     public void init(Preparator preparator, List<MediaQuery> wrapMedia) {
         gCSSTreeParser.init(preparator, wrapMedia);
+        this.preparator = preparator;
     }
     
     public RuleList getRules() {
@@ -35,35 +37,6 @@ import org.slf4j.LoggerFactory;
     
     public List<String> getImportPaths() {
         return gCSSTreeParser.getImportPaths();
-    }
-    
-    public RuleVolume prepareRuleVolume(List<Declaration> declarations,
-                                        List<RuleVolumeArea> volumeAreas,
-                                        String pseudo,
-                                        String pseudoFuncArg) {
-        if ((declarations == null || declarations.isEmpty()) &&
-	         (volumeAreas == null || volumeAreas.isEmpty())) {
-            log.debug("Empty RuleVolume was omited");
-            return null; }
-        RuleVolume rv = new RuleVolume(pseudo, pseudoFuncArg);
-        if (declarations != null)
-            for (Declaration d : declarations)
-                rv.add(d);
-        if (volumeAreas != null)
-            for (RuleVolumeArea a : volumeAreas)
-                rv.add(a);
-        log.info("Create @volume as with:\n{}", rv);
-        return rv;
-    }
-    
-    public RuleVolumeArea prepareRuleVolumeArea(String area, List<Declaration> declarations) {
-        if ((declarations == null || declarations.isEmpty())) {
-            log.debug("Empty RuleVolumeArea was omited");
-            return null; }
-        RuleVolumeArea rva = new RuleVolumeArea(area);
-        rva.replaceAll(declarations);
-        log.info("Create @" + area + " with:\n{}", rva);
-        return rva;
     }
 }
 
@@ -89,7 +62,7 @@ volume returns [RuleVolume stmnt]
         areas=volume_areas
       )
       {
-        $stmnt = prepareRuleVolume(decl, areas, pseudo, pseudoFuncArg);
+        $stmnt = preparator.prepareRuleVolume(decl, areas, pseudo, pseudoFuncArg);
       }
     ;
 
@@ -112,6 +85,6 @@ volume_area returns [RuleVolumeArea area]
     : ^( a=VOLUME_AREA
          decl=declarations )
       {
-        $area = prepareRuleVolumeArea(a.getText().substring(1), decl);
+        $area = preparator.prepareRuleVolumeArea(a.getText().substring(1), decl);
       }
     ;

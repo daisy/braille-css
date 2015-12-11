@@ -23,3 +23,14 @@ VOLUME_AREA
     : '@begin'
     | '@end'
     ;
+
+MARGIN_AREA
+  : '@top-left'
+  | '@top-center'
+  | '@top-right'
+  | '@bottom-left'
+  | '@bottom-center'
+  | '@bottom-right'
+  | '@left'
+  | '@right'
+  ;
