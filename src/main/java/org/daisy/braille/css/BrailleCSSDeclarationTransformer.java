@@ -13,6 +13,7 @@ import org.daisy.braille.css.BrailleCSSProperty.Border;
 import org.daisy.braille.css.BrailleCSSProperty.Content;
 import org.daisy.braille.css.BrailleCSSProperty.Display;
 import org.daisy.braille.css.BrailleCSSProperty.Hyphens;
+import org.daisy.braille.css.BrailleCSSProperty.LetterSpacing;
 import org.daisy.braille.css.BrailleCSSProperty.LineHeight;
 import org.daisy.braille.css.BrailleCSSProperty.ListStyleType;
 import org.daisy.braille.css.BrailleCSSProperty.Margin;
@@ -24,6 +25,7 @@ import org.daisy.braille.css.BrailleCSSProperty.StringSet;
 import org.daisy.braille.css.BrailleCSSProperty.TextIndent;
 import org.daisy.braille.css.BrailleCSSProperty.TextTransform;
 import org.daisy.braille.css.BrailleCSSProperty.WhiteSpace;
+import org.daisy.braille.css.BrailleCSSProperty.WordSpacing;
 
 import cz.vutbr.web.css.CSSFactory;
 import cz.vutbr.web.css.CSSProperty;
@@ -191,6 +193,13 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 	private boolean processLeft(Declaration d,
 			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
 		return genericOneIdentOrInteger(AbsoluteMargin.class, AbsoluteMargin.integer, true,
+				d, properties, values);
+	}
+	
+	@SuppressWarnings("unused")
+	private boolean processLetterSpacing(Declaration d,
+			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
+		return genericOneIdentOrInteger(LetterSpacing.class, LetterSpacing.length, true,
 				d, properties, values);
 	}
 	
@@ -392,6 +401,13 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 	private boolean processWhiteSpace(Declaration d,
 			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
 		return genericOneIdent(WhiteSpace.class, d, properties);
+	}
+	
+	@SuppressWarnings("unused")
+	private boolean processWordSpacing(Declaration d,
+			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
+		return genericOneIdentOrInteger(WordSpacing.class, WordSpacing.length, true,
+				d, properties, values);
 	}
 	
 	/****************************************************************

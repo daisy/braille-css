@@ -25,6 +25,7 @@ import org.daisy.braille.css.BrailleCSSProperty.Border;
 import org.daisy.braille.css.BrailleCSSProperty.Content;
 import org.daisy.braille.css.BrailleCSSProperty.Display;
 import org.daisy.braille.css.BrailleCSSProperty.Hyphens;
+import org.daisy.braille.css.BrailleCSSProperty.LetterSpacing;
 import org.daisy.braille.css.BrailleCSSProperty.LineHeight;
 import org.daisy.braille.css.BrailleCSSProperty.ListStyleType;
 import org.daisy.braille.css.BrailleCSSProperty.Margin;
@@ -36,6 +37,7 @@ import org.daisy.braille.css.BrailleCSSProperty.StringSet;
 import org.daisy.braille.css.BrailleCSSProperty.TextIndent;
 import org.daisy.braille.css.BrailleCSSProperty.TextTransform;
 import org.daisy.braille.css.BrailleCSSProperty.WhiteSpace;
+import org.daisy.braille.css.BrailleCSSProperty.WordSpacing;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +49,7 @@ public class SupportedBrailleCSS implements SupportedCSS {
 	
 	private static Logger log = LoggerFactory.getLogger(SupportedBrailleCSS.class);
 	
-	private static final int TOTAL_SUPPORTED_DECLARATIONS = 39;
+	private static final int TOTAL_SUPPORTED_DECLARATIONS = 41;
 	
 	private static final TermFactory tf = CSSFactory.getTermFactory();
 	
@@ -58,6 +60,8 @@ public class SupportedBrailleCSS implements SupportedCSS {
 	private static final Term<?> DEFAULT_UA_ORPHANS = tf.createInteger(2);
 	private static final Term<?> DEFAULT_UA_WIDOWS = tf.createInteger(2);
 	private static final Term<?> DEFAULT_UA_LINE_HEIGHT = tf.createInteger(1);
+	private static final Term<?> DEFAULT_UA_LETTER_SPACING = tf.createInteger(1);
+	private static final Term<?> DEFAULT_UA_WORD_SPACING = tf.createInteger(1);
 	
 	private Map<String, CSSProperty> defaultCSSproperties;
 	private Map<String, Term<?>> defaultCSSvalues;
@@ -203,6 +207,10 @@ public class SupportedBrailleCSS implements SupportedCSS {
 		props.put("text-transform", TextTransform.AUTO);
 		props.put("white-space", WhiteSpace.NORMAL);
 		props.put("hyphens", Hyphens.MANUAL);
+		props.put("letter-spacing", LetterSpacing.length);
+		values.put("letter-spacing", DEFAULT_UA_LETTER_SPACING);
+		props.put("word-spacing", WordSpacing.length);
+		values.put("word-spacing", DEFAULT_UA_WORD_SPACING);
 		
 		this.defaultCSSproperties = props;
 		this.defaultCSSvalues = values;

@@ -125,6 +125,29 @@ public interface BrailleCSSProperty extends CSSProperty {
 		}
 	}
 	
+	public enum LetterSpacing implements BrailleCSSProperty {
+		length(""), INHERIT("inherit");
+		
+		private String text;
+		
+		private LetterSpacing(String text) {
+			this.text = text;
+			}
+		
+		public boolean inherited() {
+			return true;
+		}
+		
+		public boolean equalsInherit() {
+			return this == INHERIT;
+		}
+		
+		@Override
+		public String toString() {
+			return text;
+		}
+	}
+	
 	public enum LineHeight implements BrailleCSSProperty {
 		integer(""), INHERIT("inherit");
 
@@ -362,6 +385,29 @@ public interface BrailleCSSProperty extends CSSProperty {
 		private String text;
 		
 		private WhiteSpace(String text) {
+			this.text = text;
+		}
+		
+		public boolean inherited() {
+			return true;
+		}
+		
+		public boolean equalsInherit() {
+			return this == INHERIT;
+		}
+		
+		@Override
+		public String toString() {
+			return text;
+		}
+	}
+	
+	public enum WordSpacing implements BrailleCSSProperty {
+		length(""), INHERIT("inherit");
+		
+		private String text;
+		
+		private WordSpacing(String text) {
 			this.text = text;
 		}
 		
