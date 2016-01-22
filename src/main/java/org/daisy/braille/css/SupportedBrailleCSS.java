@@ -24,6 +24,7 @@ import org.daisy.braille.css.BrailleCSSProperty.AbsoluteMargin;
 import org.daisy.braille.css.BrailleCSSProperty.Border;
 import org.daisy.braille.css.BrailleCSSProperty.Content;
 import org.daisy.braille.css.BrailleCSSProperty.Display;
+import org.daisy.braille.css.BrailleCSSProperty.Flow;
 import org.daisy.braille.css.BrailleCSSProperty.Hyphens;
 import org.daisy.braille.css.BrailleCSSProperty.LetterSpacing;
 import org.daisy.braille.css.BrailleCSSProperty.LineHeight;
@@ -49,7 +50,7 @@ public class SupportedBrailleCSS implements SupportedCSS {
 	
 	private static Logger log = LoggerFactory.getLogger(SupportedBrailleCSS.class);
 	
-	private static final int TOTAL_SUPPORTED_DECLARATIONS = 41;
+	private static final int TOTAL_SUPPORTED_DECLARATIONS = 42;
 	
 	private static final TermFactory tf = CSSFactory.getTermFactory();
 	
@@ -211,6 +212,7 @@ public class SupportedBrailleCSS implements SupportedCSS {
 		values.put("letter-spacing", DEFAULT_UA_LETTER_SPACING);
 		props.put("word-spacing", WordSpacing.length);
 		values.put("word-spacing", DEFAULT_UA_WORD_SPACING);
+		props.put("flow", Flow.NORMAL);
 		
 		this.defaultCSSproperties = props;
 		this.defaultCSSvalues = values;

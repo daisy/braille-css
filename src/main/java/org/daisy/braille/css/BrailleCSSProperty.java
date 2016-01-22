@@ -101,7 +101,30 @@ public interface BrailleCSSProperty extends CSSProperty {
 			return text;
 		}
 	}
+	
+	public enum Flow implements CSSProperty {
+		identifier(""), NORMAL("normal"), INHERIT("inherit");
 
+		private String text;
+
+		private Flow(String text) {
+			this.text = text;
+		}
+
+		public boolean inherited() {
+			return false;
+		}
+
+		public boolean equalsInherit() {
+			return this == INHERIT;
+		}
+
+		@Override
+		public String toString() {
+			return text;
+		}
+	}
+	
 	public enum Hyphens implements BrailleCSSProperty {
 		NONE("none"), AUTO("auto"), MANUAL("manual"), INHERIT("inherit");
 
