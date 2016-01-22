@@ -13,4 +13,9 @@ public class BrailleCSSRuleFactory extends RuleFactoryImpl {
 	public RuleMargin createMargin(String area) {
 		return new RuleMarginImpl(area);
 	}
+	
+	@Override
+	public Selector createSelector() {
+		return new SelectorImpl();
+	}
 }
