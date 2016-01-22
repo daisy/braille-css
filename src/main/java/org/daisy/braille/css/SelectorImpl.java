@@ -1,6 +1,7 @@
 package org.daisy.braille.css;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -22,6 +23,70 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 				return add(new StackedPseudoElementImpl((PseudoElement)lastPart, (PseudoElement)part)); }
 		}
 		return super.add(part);
+	}
+	
+	public static class PseudoElementImpl implements PseudoElement {
+		
+		final static HashSet<String> PSEUDO_CLASS_DEFS = new HashSet<String>();
+		static {
+			PSEUDO_CLASS_DEFS.add(PseudoElement.BEFORE);
+			PSEUDO_CLASS_DEFS.add(PseudoElement.AFTER);
+			PSEUDO_CLASS_DEFS.add("duplicate");
+		}
+		
+		private final String name;
+		
+		public PseudoElementImpl(String name) {
+			if (PSEUDO_CLASS_DEFS.contains(name))
+				this.name = name;
+			else
+				throw new IllegalArgumentException(name + " is not a valid pseudo-class name");
+		}
+		
+		public String getName() {
+			return name;
+		}
+		
+		public void computeSpecificity(Specificity spec) {
+			spec.add(Level.D);
+		}
+		
+		public boolean matches(Element e, MatchCondition cond) {
+			return true;
+		}
+		
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb
+				.append(OutputUtil.PAGE_OPENING)
+				.append(OutputUtil.PAGE_OPENING)
+				.append(name)
+				.append(OutputUtil.PAGE_CLOSING);
+			return sb.toString();
+		}
+		
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + name.hashCode();
+			return result;
+		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (!(obj instanceof PseudoElementImpl))
+				return false;
+			PseudoElementImpl other = (PseudoElementImpl) obj;
+			if (!name.equals(other.name))
+				return false;
+			return true;
+		}
 	}
 	
 	public static class StackedPseudoElementImpl implements PseudoElement, Iterable<PseudoElement> {
