@@ -55,6 +55,6 @@ public class PseudoElementsTest {
 		assertEquals(cslist, rule.getSelectors());
 		PseudoElement p = s.getPseudoElement();
 		assertTrue(p instanceof StackedPseudoElementImpl);
-		assertEquals("::after::before", p.getName());
+		assertEquals("::after::before", p.toString());
 	}
 }

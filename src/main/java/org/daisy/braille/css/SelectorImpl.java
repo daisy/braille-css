@@ -1,7 +1,7 @@
 package org.daisy.braille.css;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,24 +27,71 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 	
 	public static class PseudoElementImpl implements PseudoElement {
 		
-		final static HashSet<String> PSEUDO_CLASS_DEFS = new HashSet<String>();
-		static {
-			PSEUDO_CLASS_DEFS.add(PseudoElement.BEFORE);
-			PSEUDO_CLASS_DEFS.add(PseudoElement.AFTER);
-			PSEUDO_CLASS_DEFS.add("duplicate");
+		private static enum PseudoElementDef {
+			BEFORE("before"),
+			AFTER("after"),
+			DUPLICATE("duplicate"),
+			LIST_ITEM("list-item"),
+			TABLE_BY("table-by", 1);
+			
+			private final String name;
+			private final int minArgs;
+			private final int maxArgs;
+			
+			private PseudoElementDef(String name) {
+				this.name = name;
+				this.minArgs = 0;
+				this.maxArgs = 0;
+			}
+			
+			private PseudoElementDef(String name, int args) {
+				this(name, args, args);
+			}
+			
+			private PseudoElementDef(String name, int minArgs, int maxArgs) {
+				this.name = name;
+				this.minArgs = minArgs;
+				this.maxArgs = maxArgs;
+			}
 		}
 		
-		private final String name;
+		private final static HashMap<String,PseudoElementDef> PSEUDO_ELEMENT_DEFS;
+		static {
+			PSEUDO_ELEMENT_DEFS = new HashMap<String,PseudoElementDef>();
+			for (PseudoElementDef d : PseudoElementDef.values())
+				PSEUDO_ELEMENT_DEFS.put(d.name, d);
+		}
 		
-		public PseudoElementImpl(String name) {
-			if (PSEUDO_CLASS_DEFS.contains(name))
-				this.name = name;
+		private final PseudoElementDef def;
+		private final List<String> args;
+		
+		public PseudoElementImpl(String name, String... args) {
+			name = name.toLowerCase(); // Pseudo-element names are case-insensitive
+			if (PSEUDO_ELEMENT_DEFS.containsKey(name))
+				def = PSEUDO_ELEMENT_DEFS.get(name);
 			else
-				throw new IllegalArgumentException(name + " is not a valid pseudo-class name");
+				throw new IllegalArgumentException(name + " is not a valid pseudo-element name");
+			if (args.length > 0 && def.maxArgs == 0)
+				throw new IllegalArgumentException(name + " must not be a function");
+			if (args.length == 0 && def.minArgs > 0)
+				throw new IllegalArgumentException(name + " must be a function");
+			this.args = new ArrayList<String>();
+			if (def.minArgs > 0) {
+				if (args.length < def.minArgs || args.length > def.maxArgs)
+					throw new IllegalArgumentException(name + " requires " + def.minArgs
+					                                   + (def.maxArgs > def.minArgs ? ".." + def.maxArgs : "") + " "
+					                                   + (def.minArgs == 1 && def.maxArgs == 1 ? "argument" : "arguments"));
+				for (String a : args)
+					this.args.add(a);
+			}
 		}
 		
 		public String getName() {
-			return name;
+			return def.name;
+		}
+		
+		public String[] getArguments() {
+			return args.toArray(new String[args.size()]);
 		}
 		
 		public void computeSpecificity(Specificity spec) {
@@ -61,8 +108,13 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 			sb
 				.append(OutputUtil.PAGE_OPENING)
 				.append(OutputUtil.PAGE_OPENING)
-				.append(name)
-				.append(OutputUtil.PAGE_CLOSING);
+				.append(def.name);
+			if (args.size() > 0) {
+				sb.append(OutputUtil.FUNCTION_OPENING);
+				OutputUtil.appendList(sb, args, ", ");
+				sb.append(OutputUtil.FUNCTION_CLOSING);
+			}
+			sb.append(OutputUtil.PAGE_CLOSING);
 			return sb.toString();
 		}
 		
@@ -70,7 +122,8 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
-			result = prime * result + name.hashCode();
+			result = prime * result + def.hashCode();
+			result = prime * result + args.hashCode();
 			return result;
 		}
 		
@@ -83,7 +136,9 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 			if (!(obj instanceof PseudoElementImpl))
 				return false;
 			PseudoElementImpl other = (PseudoElementImpl) obj;
-			if (!name.equals(other.name))
+			if (!def.equals(other.def))
+				return false;
+			if (!args.equals(other.args))
 				return false;
 			return true;
 		}
@@ -103,9 +158,12 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 			return this;
 		}
 		
-		@Override
 		public String getName() {
-			return toString();
+			throw new UnsupportedOperationException("getName() can only be called for individual stacked pseudo-elements");
+		}
+		
+		public String[] getArguments() {
+			throw new UnsupportedOperationException("getArguments() can only be called for individual stacked pseudo-elements");
 		}
 		
 		public boolean matches(Element e, MatchCondition cond) {

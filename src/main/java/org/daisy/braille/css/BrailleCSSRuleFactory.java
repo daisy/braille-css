@@ -23,4 +23,8 @@ public class BrailleCSSRuleFactory extends RuleFactoryImpl {
 	public PseudoElement createPseudoElement(String name) {
 		return new SelectorImpl.PseudoElementImpl(name);
 	}
+	
+	public PseudoElement createPseudoElementFunction(String name, String... args) {
+		return new SelectorImpl.PseudoElementImpl(name, args);
+	}
 }
