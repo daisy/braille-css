@@ -22,7 +22,9 @@ import org.daisy.braille.css.BrailleCSSProperty.MaxLength;
 import org.daisy.braille.css.BrailleCSSProperty.MinLength;
 import org.daisy.braille.css.BrailleCSSProperty.Padding;
 import org.daisy.braille.css.BrailleCSSProperty.Page;
+import org.daisy.braille.css.BrailleCSSProperty.RenderTableBy;
 import org.daisy.braille.css.BrailleCSSProperty.StringSet;
+import org.daisy.braille.css.BrailleCSSProperty.TableHeaderPolicy;
 import org.daisy.braille.css.BrailleCSSProperty.TextIndent;
 import org.daisy.braille.css.BrailleCSSProperty.TextTransform;
 import org.daisy.braille.css.BrailleCSSProperty.WhiteSpace;
@@ -317,6 +319,25 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 	}
 	
 	@SuppressWarnings("unused")
+	private boolean processRenderTableBy(Declaration d,
+			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
+		
+		if (d.size() == 1 && genericOneIdent(RenderTableBy.class, d, properties))
+			return true;
+		TermList list = tf.createList();
+		for (Term<?> t : d.asList())
+			if (t instanceof TermIdent)
+				list.add(t);
+			else
+				return false;
+		if (list.isEmpty())
+			return false;
+		properties.put("render-table-by", RenderTableBy.axes);
+		values.put("render-table-by", list);
+		return true;
+	}
+	
+	@SuppressWarnings("unused")
 	private boolean processRight(Declaration d,
 			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
 		return genericOneIdentOrInteger(AbsoluteMargin.class, AbsoluteMargin.integer, true,
@@ -370,6 +391,12 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 		values.put("string-set", list);
 		
 		return true;
+	}
+	
+	@SuppressWarnings("unused")
+	private boolean processTableHeaderPolicy(Declaration d,
+			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
+		return genericOneIdent(TableHeaderPolicy.class, d, properties);
 	}
 	
 	@SuppressWarnings("unused")

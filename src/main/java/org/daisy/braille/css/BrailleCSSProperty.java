@@ -79,7 +79,7 @@ public interface BrailleCSSProperty extends CSSProperty {
 	
 	public enum Display implements BrailleCSSProperty {
 		INLINE("inline"), BLOCK("block"), LIST_ITEM("list-item"),
-		NONE("none"), PAGE_BREAK("page-break"), INHERIT("inherit"),
+		NONE("none"), TABLE("table"), INHERIT("inherit"),
 		custom("");
 
 		private String text;
@@ -333,6 +333,29 @@ public interface BrailleCSSProperty extends CSSProperty {
 		}
 	}
 	
+	public enum RenderTableBy implements BrailleCSSProperty {
+		axes(""), AUTO("auto"), INHERIT("inherit");
+		
+		private String text;
+
+		private RenderTableBy(String text) {
+			this.text = text;
+		}
+
+		public boolean inherited() {
+			return false;
+		}
+
+		public boolean equalsInherit() {
+			return this == INHERIT;
+		}
+
+		@Override
+		public String toString() {
+			return text;
+		}
+	}
+
 	public enum StringSet implements BrailleCSSProperty {
 		list_values(""), NONE("none"), INHERIT("inherit");
 		
@@ -356,6 +379,30 @@ public interface BrailleCSSProperty extends CSSProperty {
 		}
 	}
 	
+	public enum TableHeaderPolicy implements BrailleCSSProperty {
+		ONCE("once"), ALWAYS("always"), INHERIT("inherit");
+
+		private String text;
+
+		private TableHeaderPolicy(String text) {
+			this.text = text;
+		}
+		
+		// TODO: make inherited?
+		public boolean inherited() {
+			return false;
+		}
+
+		public boolean equalsInherit() {
+			return this == INHERIT;
+		}
+
+		@Override
+		public String toString() {
+			return text;
+		}
+	}
+
 	public enum TextIndent implements BrailleCSSProperty {
 		integer(""), INHERIT("inherit");
 
