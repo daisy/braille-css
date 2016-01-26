@@ -34,3 +34,41 @@ volume_area
     : VOLUME_AREA S* LCURLY S* declarations RCURLY S*
       -> ^(VOLUME_AREA declarations)
     ;
+
+inlineset
+    : (pseudo+ S*)?
+      LCURLY S*
+        declarations
+      RCURLY S*
+      -> ^(RULE pseudo* declarations)
+    ;
+
+/*
+ * The COLON recognized as the start of an invalid property (which is
+ * used in some nasty CSS hacks) conflicts with the COLON in the
+ * possible pseudo class selector of inlineset. jStyleParser favors
+ * the hack recovery over the support for pseudo elements in inline
+ * stylesheets.
+ */
+noprop
+    :
+    ( CLASSKEYWORD -> CLASSKEYWORD
+    | NUMBER -> NUMBER
+    | COMMA -> COMMA
+    | GREATER -> GREATER
+    | LESS -> LESS
+    | QUESTION -> QUESTION
+    | PERCENT -> PERCENT
+    | EQUALS -> EQUALS
+    | SLASH -> SLASH
+    | EXCLAMATION -> EXCLAMATION
+    | PLUS -> PLUS
+    | ASTERISK -> ASTERISK
+    | DASHMATCH -> DASHMATCH
+    | INCLUDES -> INCLUDES
+ // | COLON -> COLON
+    | STRING_CHAR -> STRING_CHAR
+    | CTRL -> CTRL
+    | INVALID_TOKEN -> INVALID_TOKEN
+    ) !S*
+    ;
