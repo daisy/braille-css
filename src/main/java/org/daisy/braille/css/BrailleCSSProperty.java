@@ -380,7 +380,7 @@ public interface BrailleCSSProperty extends CSSProperty {
 	}
 	
 	public enum TableHeaderPolicy implements BrailleCSSProperty {
-		ONCE("once"), ALWAYS("always"), INHERIT("inherit");
+		ONCE("once"), ALWAYS("always"), FRONT("front"), INHERIT("inherit");
 
 		private String text;
 
