@@ -88,3 +88,69 @@ volume_area returns [RuleVolumeArea area]
         $area = preparator.prepareRuleVolumeArea(a.getText().substring(1), decl);
       }
     ;
+
+pseudo returns [cz.vutbr.web.css.Selector.PseudoPage pseudoPage]
+    : ^(PSEUDOCLASS m=MINUS? i=IDENT) {
+          String name = i.getText();
+          if (m != null) name = "-" + name;
+          try {
+              $pseudoPage = gCSSTreeParser.rf.createPseudoClass(name);
+          } catch (Exception e1) {
+              // maybe a single colon was used for a pseudo element
+              try {
+                  $pseudoPage = gCSSTreeParser.rf.createPseudoElement(name); }
+              catch (Exception e2) {
+                  log.error("invalid pseudo declaration: " + name);
+                  $pseudoPage = null;
+              }
+          }
+      }
+    | ^(PSEUDOCLASS f=FUNCTION i=IDENT) {
+          $pseudoPage = gCSSTreeParser.rf.createPseudoClassFunction(f.getText(), i.getText());
+      }
+    | ^(PSEUDOCLASS f=FUNCTION m=MINUS? n=NUMBER) {
+          String exp = n.getText();
+          if (m != null) exp = "-" + exp;
+              $pseudoPage = gCSSTreeParser.rf.createPseudoClassFunction(f.getText(), exp);
+      }
+    | ^(PSEUDOCLASS f=FUNCTION m=MINUS? n=INDEX) {
+          String exp = n.getText();
+          if (m != null) exp = "-" + exp;
+          $pseudoPage = gCSSTreeParser.rf.createPseudoClassFunction(f.getText(), exp);
+      }
+    | ^(PSEUDOELEM m=MINUS? i=IDENT) {
+          String name = i.getText();
+          if (m != null) name = "-" + name;
+          try {
+              $pseudoPage = gCSSTreeParser.rf.createPseudoElement(name);
+          } catch (Exception e) {
+              log.error("invalid pseudo declaration: " + name);
+              $pseudoPage = null;
+          }
+      }
+    | ^(PSEUDOELEM f=FUNCTION i=IDENT) {
+          try {
+              $pseudoPage = gCSSTreeParser.rf.createPseudoElementFunction(f.getText(), i.getText());
+          } catch (Exception e) {
+            log.error("invalid pseudo declaration", e);
+          }
+      }
+    | ^(PSEUDOELEM f=FUNCTION m=MINUS? n=NUMBER) {
+          String exp = n.getText();
+          if (m != null) exp = "-" + exp;
+          try {
+              $pseudoPage = gCSSTreeParser.rf.createPseudoElementFunction(f.getText(), exp);
+          } catch (Exception e) {
+              log.error("invalid pseudo declaration", e);
+          }
+      }
+    | ^(PSEUDOELEM f=FUNCTION m=MINUS? n=INDEX) {
+          String exp = n.getText();
+          if (m != null) exp = "-" + exp;
+          try {
+              $pseudoPage = gCSSTreeParser.rf.createPseudoElementFunction(f.getText(), exp);
+          } catch (Exception e) {
+              log.error("invalid pseudo declaration", e);
+          }
+      }
+    ;

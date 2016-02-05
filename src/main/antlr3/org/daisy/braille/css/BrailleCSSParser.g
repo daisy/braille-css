@@ -35,6 +35,13 @@ volume_area
       -> ^(VOLUME_AREA declarations)
     ;
 
+pseudo
+    : pseudocolon^ (MINUS? IDENT | FUNCTION S!* (IDENT | MINUS? NUMBER | MINUS? INDEX) S!* RPAREN!)
+    ;
+  catch [RecognitionException re] {
+     retval.tree = gCSSParser.tnr.invalidFallback(INVALID_SELPART, "INVALID_SELPART", re);
+  }
+
 inlineset
     : (pseudo+ S*)?
       LCURLY S*

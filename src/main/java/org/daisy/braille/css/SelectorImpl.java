@@ -62,32 +62,38 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 				PSEUDO_ELEMENT_DEFS.put(d.name, d);
 		}
 		
-		private final PseudoElementDef def;
+		private final String name;
 		private final List<String> args;
 		
 		public PseudoElementImpl(String name, String... args) {
-			name = name.toLowerCase(); // Pseudo-element names are case-insensitive
-			if (PSEUDO_ELEMENT_DEFS.containsKey(name))
-				def = PSEUDO_ELEMENT_DEFS.get(name);
-			else
-				throw new IllegalArgumentException(name + " is not a valid pseudo-element name");
-			if (args.length > 0 && def.maxArgs == 0)
-				throw new IllegalArgumentException(name + " must not be a function");
-			if (args.length == 0 && def.minArgs > 0)
-				throw new IllegalArgumentException(name + " must be a function");
+			this.name = name = name.toLowerCase(); // Pseudo-element names are case-insensitive
 			this.args = new ArrayList<String>();
-			if (def.minArgs > 0) {
-				if (args.length < def.minArgs || args.length > def.maxArgs)
-					throw new IllegalArgumentException(name + " requires " + def.minArgs
-					                                   + (def.maxArgs > def.minArgs ? ".." + def.maxArgs : "") + " "
-					                                   + (def.minArgs == 1 && def.maxArgs == 1 ? "argument" : "arguments"));
+			if (name.startsWith("-"))
 				for (String a : args)
 					this.args.add(a);
+			else {
+				PseudoElementDef def;
+				if (PSEUDO_ELEMENT_DEFS.containsKey(name))
+					def = PSEUDO_ELEMENT_DEFS.get(name);
+				else
+					throw new IllegalArgumentException(name + " is not a valid pseudo-element name");
+				if (args.length > 0 && def.maxArgs == 0)
+					throw new IllegalArgumentException(name + " must not be a function");
+				if (args.length == 0 && def.minArgs > 0)
+					throw new IllegalArgumentException(name + " must be a function");
+				if (def.minArgs > 0) {
+					if (args.length < def.minArgs || args.length > def.maxArgs)
+						throw new IllegalArgumentException(name + " requires " + def.minArgs
+						                                   + (def.maxArgs > def.minArgs ? ".." + def.maxArgs : "") + " "
+						                                   + (def.minArgs == 1 && def.maxArgs == 1 ? "argument" : "arguments"));
+					for (String a : args)
+						this.args.add(a);
+				}
 			}
 		}
 		
 		public String getName() {
-			return def.name;
+			return name;
 		}
 		
 		public String[] getArguments() {
@@ -108,7 +114,7 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 			sb
 				.append(OutputUtil.PAGE_OPENING)
 				.append(OutputUtil.PAGE_OPENING)
-				.append(def.name);
+				.append(name);
 			if (args.size() > 0) {
 				sb.append(OutputUtil.FUNCTION_OPENING);
 				OutputUtil.appendList(sb, args, ", ");
@@ -122,7 +128,7 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
-			result = prime * result + def.hashCode();
+			result = prime * result + name.hashCode();
 			result = prime * result + args.hashCode();
 			return result;
 		}
@@ -136,7 +142,7 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 			if (!(obj instanceof PseudoElementImpl))
 				return false;
 			PseudoElementImpl other = (PseudoElementImpl) obj;
-			if (!def.equals(other.def))
+			if (!name.equals(other.name))
 				return false;
 			if (!args.equals(other.args))
 				return false;
