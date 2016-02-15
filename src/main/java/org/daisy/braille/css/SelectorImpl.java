@@ -2,7 +2,6 @@ package org.daisy.braille.css;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import cz.vutbr.web.css.CombinedSelector.Specificity;
@@ -16,11 +15,26 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 	
 	@Override
 	public boolean add(SelectorPart part) {
-		if (part instanceof PseudoElement && size() > 0) {
-			SelectorPart lastPart = get(size() - 1);
-			if (lastPart instanceof PseudoElement) {
-				remove(size() - 1);
-				return add(new StackedPseudoElementImpl((PseudoElement)lastPart, (PseudoElement)part)); }
+		if (part instanceof PseudoElement) {
+			if (!(part instanceof PseudoElementImpl))
+				throw new RuntimeException();
+			if (size() > 0) {
+				SelectorPart lastPart = get(size() - 1);
+				if (lastPart instanceof PseudoElement) {
+					if (!(lastPart instanceof PseudoElementImpl))
+						throw new RuntimeException();
+					return ((PseudoElementImpl)lastPart).add((PseudoElementImpl)part);
+				}
+			}
+		} else if (part instanceof PseudoClass) {
+			if (size() > 0) {
+				SelectorPart lastPart = get(size() - 1);
+				if (lastPart instanceof PseudoElement) {
+					if (!(lastPart instanceof PseudoElementImpl))
+						throw new RuntimeException();
+					return ((PseudoElementImpl)lastPart).add((PseudoClass)part);
+				}
+			}
 		}
 		return super.add(part);
 	}
@@ -64,6 +78,8 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 		
 		private final String name;
 		private final List<String> args;
+		private final List<PseudoClass> pseudoClasses = new ArrayList<PseudoClass>();
+		private PseudoElementImpl stackedPseudoElement = null;
 		
 		public PseudoElementImpl(String name, String... args) {
 			this.name = name = name.toLowerCase(); // Pseudo-element names are case-insensitive
@@ -108,6 +124,34 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 			return true;
 		}
 		
+		private boolean add(PseudoClass pseudoClass) {
+			if (stackedPseudoElement != null)
+				return stackedPseudoElement.add(pseudoClass);
+			else
+				return pseudoClasses.add(pseudoClass);
+		}
+		
+		private boolean add(PseudoElementImpl pseudoElement) {
+			if (stackedPseudoElement != null)
+				return stackedPseudoElement.add(pseudoElement);
+			else {
+				stackedPseudoElement = pseudoElement;
+				return true;
+			 }
+		}
+		
+		public List<PseudoClass> getPseudoClasses() {
+			return pseudoClasses;
+		}
+		
+		public boolean hasStackedPseudoElement() {
+			return stackedPseudoElement != null;
+		}
+		
+		public PseudoElementImpl getStackedPseudoElement() {
+			return stackedPseudoElement;
+		}
+		
 		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
@@ -120,7 +164,11 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 				OutputUtil.appendList(sb, args, ", ");
 				sb.append(OutputUtil.FUNCTION_CLOSING);
 			}
-			sb.append(OutputUtil.PAGE_CLOSING);
+			if (!pseudoClasses.isEmpty())
+				for (PseudoClass p : pseudoClasses)
+					sb.append(p);
+			if (stackedPseudoElement != null)
+				sb.append(stackedPseudoElement);
 			return sb.toString();
 		}
 		
@@ -130,6 +178,10 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 			int result = 1;
 			result = prime * result + name.hashCode();
 			result = prime * result + args.hashCode();
+			result = prime * result + pseudoClasses.hashCode();
+			result = prime * result
+					+ ((stackedPseudoElement == null) ? 0
+							: stackedPseudoElement.hashCode());
 			return result;
 		}
 		
@@ -139,73 +191,19 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 				return true;
 			if (obj == null)
 				return false;
-			if (!(obj instanceof PseudoElementImpl))
+			if (getClass() != obj.getClass())
 				return false;
 			PseudoElementImpl other = (PseudoElementImpl) obj;
 			if (!name.equals(other.name))
 				return false;
 			if (!args.equals(other.args))
 				return false;
-			return true;
-		}
-	}
-	
-	public static class StackedPseudoElementImpl implements PseudoElement, Iterable<PseudoElement> {
-		
-		private List<PseudoElement> list = new ArrayList<PseudoElement>();
-		
-		protected StackedPseudoElementImpl(PseudoElement element1, PseudoElement element2, PseudoElement... moreElements) {
-			add(element1).add(element2).add(moreElements);
-		}
-		
-		protected StackedPseudoElementImpl add(PseudoElement... elements) {
-			for (PseudoElement e : elements)
-				list.add(e);
-			return this;
-		}
-		
-		public String getName() {
-			throw new UnsupportedOperationException("getName() can only be called for individual stacked pseudo-elements");
-		}
-		
-		public String[] getArguments() {
-			throw new UnsupportedOperationException("getArguments() can only be called for individual stacked pseudo-elements");
-		}
-		
-		public boolean matches(Element e, MatchCondition cond) {
-			return true;
-		}
-
-		public void computeSpecificity(Specificity spec) {
-			spec.add(Level.D);
-		}
-
-		public Iterator<PseudoElement> iterator() {
-			return list.iterator();
-		}
-		
-		@Override
-		public String toString() {
-			StringBuilder sb = new StringBuilder();
-			sb = OutputUtil.appendList(sb, list, "");
-			return sb.toString();
-		}
-		
-		@Override
-		public int hashCode() {
-			return list.hashCode();
-		}
-		
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
+			if (!pseudoClasses.equals(other.pseudoClasses))
 				return false;
-			if (!(obj instanceof StackedPseudoElementImpl))
-				return false;
-			StackedPseudoElementImpl other = (StackedPseudoElementImpl) obj;
-			if (!list.equals(other.list))
+			if (stackedPseudoElement == null) {
+				if (other.stackedPseudoElement != null)
+					return false;
+			} else if (!stackedPseudoElement.equals(other.stackedPseudoElement))
 				return false;
 			return true;
 		}

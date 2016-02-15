@@ -18,7 +18,7 @@ import cz.vutbr.web.csskit.DefaultNetworkProcessor;
 import org.daisy.braille.css.BrailleCSSDeclarationTransformer;
 import org.daisy.braille.css.BrailleCSSParserFactory;
 import org.daisy.braille.css.BrailleCSSRuleFactory;
-import org.daisy.braille.css.SelectorImpl.StackedPseudoElementImpl;
+import org.daisy.braille.css.SelectorImpl.PseudoElementImpl;
 import org.daisy.braille.css.SupportedBrailleCSS;
 
 import static org.junit.Assert.assertEquals;
@@ -54,7 +54,33 @@ public class PseudoElementsTest {
 		cslist.add(cs);
 		assertEquals(cslist, rule.getSelectors());
 		PseudoElement p = s.getPseudoElement();
-		assertTrue(p instanceof StackedPseudoElementImpl);
 		assertEquals("::after::before", p.toString());
+		assertTrue(p instanceof PseudoElementImpl);
+		PseudoElementImpl i = (PseudoElementImpl)p;
+		assertTrue(i.hasStackedPseudoElement());
+		i = i.getStackedPseudoElement();
+		assertEquals("::before", i.toString());
+	}
+	
+	@Test
+	public void testPseudoElementWithPseudoClass() throws CSSException, IOException {
+		StyleSheet sheet = new BrailleCSSParserFactory().parse(
+			"table::table-by(row)::list-item:last-child::after { display: none }",
+			new DefaultNetworkProcessor(), null, SourceType.EMBEDDED, new URL("file:///base/url/is/not/specified"));
+		assertEquals(1, sheet.size());
+		RuleSet rule = (RuleSet)sheet.get(0);
+		List<CombinedSelector> cslist = new ArrayList<CombinedSelector>();
+		CombinedSelector cs = (CombinedSelector)rf.createCombinedSelector().unlock();
+		Selector s = (Selector)rf.createSelector().unlock();
+		s.add(rf.createElement("table"));
+		s.add(rf.createPseudoElementFunction("table-by", "row"));
+		s.add(rf.createPseudoElement("list-item"));
+		s.add(rf.createPseudoClass("last-child"));
+		s.add(rf.createPseudoElement("after"));
+		cs.add(s);
+		cslist.add(cs);
+		assertEquals(cslist, rule.getSelectors());
+		PseudoElement p = s.getPseudoElement();
+		assertEquals("::table-by(row)::list-item:last-child::after", p.toString());
 	}
 }
