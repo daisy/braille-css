@@ -9,6 +9,9 @@ import cz.vutbr.web.css.CombinedSelector.Specificity.Level;
 import cz.vutbr.web.css.MatchCondition;
 import cz.vutbr.web.csskit.OutputUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.w3c.dom.Element;
 
 public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
@@ -27,16 +30,47 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 				}
 			}
 		} else if (part instanceof PseudoClass) {
+			if (!(part instanceof PseudoClassImpl))
+				throw new RuntimeException();
 			if (size() > 0) {
 				SelectorPart lastPart = get(size() - 1);
 				if (lastPart instanceof PseudoElement) {
 					if (!(lastPart instanceof PseudoElementImpl))
 						throw new RuntimeException();
-					return ((PseudoElementImpl)lastPart).add((PseudoClass)part);
+					return ((PseudoElementImpl)lastPart).add((PseudoClassImpl)part);
 				}
 			}
 		}
 		return super.add(part);
+	}
+	
+	public static class PseudoClassImpl extends cz.vutbr.web.csskit.SelectorImpl.PseudoClassImpl {
+		
+		private final String name;
+		private final String[] args;
+		
+		public PseudoClassImpl(String name, String... args) {
+			super(name, args);
+			this.name = name;
+			this.args = args;
+		}
+		
+		public boolean matchesPosition(int position, int elementCount) {
+			if (name.equals("first-child")) {
+				return position == 1;
+			} else if (name.equals("last-child")) {
+				return position == elementCount;
+			} else if (name.equals("only-child")) {
+				return position == 1 && elementCount == 1;
+			} else if (name.equals("nth-child")) {
+				return positionMatches(position, decodeIndex(args[0]));
+			} else if (name.equals("nth-last-child")) {
+				return positionMatches(elementCount - position + 1, decodeIndex(args[0]));
+			} else {
+				log.warn("Don't know how to match " + toString() + " pseudo-class");
+				return false;
+			}
+		}
 	}
 	
 	public static class PseudoElementImpl implements PseudoElement {
@@ -78,7 +112,7 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 		
 		private final String name;
 		private final List<String> args;
-		private final List<PseudoClass> pseudoClasses = new ArrayList<PseudoClass>();
+		private final List<PseudoClassImpl> pseudoClasses = new ArrayList<PseudoClassImpl>();
 		private PseudoElementImpl stackedPseudoElement = null;
 		
 		public PseudoElementImpl(String name, String... args) {
@@ -124,7 +158,7 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 			return true;
 		}
 		
-		private boolean add(PseudoClass pseudoClass) {
+		private boolean add(PseudoClassImpl pseudoClass) {
 			if (stackedPseudoElement != null)
 				return stackedPseudoElement.add(pseudoClass);
 			else
@@ -140,7 +174,7 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 			 }
 		}
 		
-		public List<PseudoClass> getPseudoClasses() {
+		public List<PseudoClassImpl> getPseudoClasses() {
 			return pseudoClasses;
 		}
 		
@@ -165,7 +199,7 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 				sb.append(OutputUtil.FUNCTION_CLOSING);
 			}
 			if (!pseudoClasses.isEmpty())
-				for (PseudoClass p : pseudoClasses)
+				for (PseudoClassImpl p : pseudoClasses)
 					sb.append(p);
 			if (stackedPseudoElement != null)
 				sb.append(stackedPseudoElement);
@@ -208,4 +242,7 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 			return true;
 		}
 	}
+	
+	private static final Logger log = LoggerFactory.getLogger(SelectorImpl.class);
+	
 }
