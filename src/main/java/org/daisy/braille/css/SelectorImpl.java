@@ -81,7 +81,8 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 			DUPLICATE("duplicate"),
 			LIST_ITEM("list-item"),
 			LIST_HEADER("list-header"),
-			TABLE_BY("table-by", 1);
+			TABLE_BY("table-by", 1),
+			FOOTNOTE_CALL("footnote-call");
 			
 			private final String name;
 			private final int minArgs;
