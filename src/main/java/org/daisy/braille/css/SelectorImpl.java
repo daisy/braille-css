@@ -79,6 +79,7 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 			BEFORE("before"),
 			AFTER("after"),
 			DUPLICATE("duplicate"),
+			ALTERNATE("alternate"),
 			LIST_ITEM("list-item"),
 			LIST_HEADER("list-header"),
 			TABLE_BY("table-by", 1),
