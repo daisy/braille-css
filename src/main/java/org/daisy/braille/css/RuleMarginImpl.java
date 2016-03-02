@@ -16,7 +16,8 @@ public class RuleMarginImpl extends AbstractRuleBlock<Declaration> implements Ru
 		BOTTOMCENTER("bottom-center"),
 		BOTTOMRIGHT("bottom-right"),
 		LEFT("left"),
-		RIGHT("right");
+		RIGHT("right"),
+		FOOTNOTES("footnotes");
 		
 		public final String value;
 		

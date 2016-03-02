@@ -33,4 +33,5 @@ MARGIN_AREA
   | '@bottom-right'
   | '@left'
   | '@right'
+  | '@footnotes'
   ;
