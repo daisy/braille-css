@@ -7,6 +7,7 @@ import java.util.List;
 import cz.vutbr.web.css.CombinedSelector.Specificity;
 import cz.vutbr.web.css.CombinedSelector.Specificity.Level;
 import cz.vutbr.web.css.MatchCondition;
+import cz.vutbr.web.css.Selector;
 import cz.vutbr.web.csskit.OutputUtil;
 
 import org.slf4j.Logger;
@@ -30,14 +31,12 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 				}
 			}
 		} else if (part instanceof PseudoClass) {
-			if (!(part instanceof PseudoClassImpl))
-				throw new RuntimeException();
 			if (size() > 0) {
 				SelectorPart lastPart = get(size() - 1);
 				if (lastPart instanceof PseudoElement) {
 					if (!(lastPart instanceof PseudoElementImpl))
 						throw new RuntimeException();
-					return ((PseudoElementImpl)lastPart).add((PseudoClassImpl)part);
+					return ((PseudoElementImpl)lastPart).add((PseudoClass)part);
 				}
 			}
 		}
@@ -70,6 +69,43 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 				log.warn("Don't know how to match " + toString() + " pseudo-class");
 				return false;
 			}
+		}
+	}
+	
+	public static class NegationPseudoClassImpl implements PseudoClass {
+		
+		private final Selector negatedSelector;
+		
+		public NegationPseudoClassImpl(Selector negatedSelector) {
+			this.negatedSelector = negatedSelector;
+		}
+		
+		public boolean matches(Element e, MatchCondition cond) {
+			return !negatedSelector.matches(e, cond);
+		}
+		
+		public void computeSpecificity(Specificity spec) {
+			negatedSelector.computeSpecificity(spec);
+		}
+		
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			return prime + negatedSelector.hashCode();
+		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			NegationPseudoClassImpl other = (NegationPseudoClassImpl) obj;
+			if (!negatedSelector.equals(other.negatedSelector))
+				return false;
+			return true;
 		}
 	}
 	
@@ -115,7 +151,7 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 		
 		private final String name;
 		private final List<String> args;
-		private final List<PseudoClassImpl> pseudoClasses = new ArrayList<PseudoClassImpl>();
+		private final List<PseudoClass> pseudoClasses = new ArrayList<PseudoClass>();
 		private PseudoElementImpl stackedPseudoElement = null;
 		
 		public PseudoElementImpl(String name, String... args) {
@@ -161,7 +197,7 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 			return true;
 		}
 		
-		private boolean add(PseudoClassImpl pseudoClass) {
+		private boolean add(PseudoClass pseudoClass) {
 			if (stackedPseudoElement != null)
 				return stackedPseudoElement.add(pseudoClass);
 			else
@@ -177,7 +213,7 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 			 }
 		}
 		
-		public List<PseudoClassImpl> getPseudoClasses() {
+		public List<PseudoClass> getPseudoClasses() {
 			return pseudoClasses;
 		}
 		
@@ -202,7 +238,7 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 				sb.append(OutputUtil.FUNCTION_CLOSING);
 			}
 			if (!pseudoClasses.isEmpty())
-				for (PseudoClassImpl p : pseudoClasses)
+				for (PseudoClass p : pseudoClasses)
 					sb.append(p);
 			if (stackedPseudoElement != null)
 				sb.append(stackedPseudoElement);

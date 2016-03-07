@@ -38,6 +38,14 @@ public class PseudoElementsTest {
 	}
 	
 	@Test
+	public void testPseudoElement() throws CSSException, IOException {
+		StyleSheet sheet = new BrailleCSSParserFactory().parse(
+			"body p::after { content: 'foo' }",
+			new DefaultNetworkProcessor(), null, SourceType.EMBEDDED, new URL("file:///base/url/is/not/specified"));
+		assertEquals(1, sheet.size());
+	}
+	
+	@Test
 	public void testStackedPseudoElements() throws CSSException, IOException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
 			"p::after::before { content: 'foo' }",

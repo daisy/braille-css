@@ -105,6 +105,9 @@ pseudo returns [cz.vutbr.web.css.Selector.PseudoPage pseudoPage]
               }
           }
       }
+    | ^(PSEUDOCLASS NOT s=selector) {
+          $pseudoPage = new SelectorImpl.NegationPseudoClassImpl(s);
+      }
     | ^(PSEUDOCLASS f=FUNCTION i=IDENT) {
           $pseudoPage = gCSSTreeParser.rf.createPseudoClassFunction(f.getText(), i.getText());
       }

@@ -35,3 +35,5 @@ MARGIN_AREA
   | '@right'
   | '@footnotes'
   ;
+
+NOT : 'not(' ;
