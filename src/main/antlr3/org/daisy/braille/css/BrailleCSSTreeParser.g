@@ -108,6 +108,9 @@ pseudo returns [cz.vutbr.web.css.Selector.PseudoPage pseudoPage]
     | ^(PSEUDOCLASS NOT s=selector) {
           $pseudoPage = new SelectorImpl.NegationPseudoClassImpl(s);
       }
+    | ^(PSEUDOCLASS HAS ss=relative_selectors) {
+          $pseudoPage = new SelectorImpl.RelationalPseudoClassImpl(ss);
+      }
     | ^(PSEUDOCLASS f=FUNCTION i=IDENT) {
           $pseudoPage = gCSSTreeParser.rf.createPseudoClassFunction(f.getText(), i.getText());
       }
@@ -156,4 +159,18 @@ pseudo returns [cz.vutbr.web.css.Selector.PseudoPage pseudoPage]
               log.error("invalid pseudo declaration", e);
           }
       }
+    ;
+
+relative_selectors returns [List<cz.vutbr.web.css.CombinedSelector> list]
+@init {
+    $list = new ArrayList<cz.vutbr.web.css.CombinedSelector>();
+}
+    : (s=relative_selector { list.add(s); })+
+    ;
+
+relative_selector returns [cz.vutbr.web.css.CombinedSelector combinedSelector]
+@init {
+    $combinedSelector = (cz.vutbr.web.css.CombinedSelector)gCSSTreeParser.rf.createCombinedSelector().unlock();
+}
+    : ASTERISK (c=combinator s=selector { combinedSelector.add(s.setCombinator(c)); })+
     ;

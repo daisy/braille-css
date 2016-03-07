@@ -39,12 +39,22 @@ pseudo
     : pseudocolon^ (
         MINUS? IDENT
       | NOT selector RPAREN!
+      | HAS relative_selector (COMMA! relative_selector)* RPAREN!
       | FUNCTION S!* (IDENT | MINUS? NUMBER | MINUS? INDEX) S!* RPAREN!
       )
     ;
   catch [RecognitionException re] {
      retval.tree = gCSSParser.tnr.invalidFallback(INVALID_SELPART, "INVALID_SELPART", re);
   }
+
+relative_selector
+    : combinator_selector (combinator selector)* -> ASTERISK combinator_selector (combinator selector)*
+    ;
+
+combinator_selector
+    : selector -> DESCENDANT selector
+    | combinator selector
+    ;
 
 inlineset
     : (pseudo+ S*)?

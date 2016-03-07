@@ -2,18 +2,23 @@ package org.daisy.braille.css;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
+import cz.vutbr.web.css.CombinedSelector;
 import cz.vutbr.web.css.CombinedSelector.Specificity;
 import cz.vutbr.web.css.CombinedSelector.Specificity.Level;
 import cz.vutbr.web.css.MatchCondition;
 import cz.vutbr.web.css.Selector;
+import cz.vutbr.web.css.Selector.Combinator;
 import cz.vutbr.web.csskit.OutputUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 	
@@ -104,6 +109,93 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 				return false;
 			NegationPseudoClassImpl other = (NegationPseudoClassImpl) obj;
 			if (!negatedSelector.equals(other.negatedSelector))
+				return false;
+			return true;
+		}
+	}
+	
+	public static class RelationalPseudoClassImpl implements PseudoClass {
+		
+		private final List<CombinedSelector> relativeSelector;
+		
+		public RelationalPseudoClassImpl(List<CombinedSelector> relativeSelector) {
+			if (relativeSelector.size() < 1)
+				throw new RuntimeException(":has() must not be empty");
+			this.relativeSelector = relativeSelector;
+		}
+		
+		public boolean matches(Element e, MatchCondition cond) {
+			for (CombinedSelector s : relativeSelector)
+				if (!matchesRelative(s, e, cond))
+					return false;
+			return true;
+		}
+		
+		public static boolean matchesRelative(List<Selector> selector, Element e, MatchCondition cond) {
+			Iterator<Selector> it = selector.iterator();
+			Selector first = it.next();
+			Selector.Combinator combinator = first.getCombinator();
+			List<Selector> rest = null;
+			if (it.hasNext()) {
+				rest = new ArrayList<Selector>();
+				while (it.hasNext())
+					rest.add(it.next()); }
+			switch (combinator) {
+			case CHILD:
+			case DESCENDANT:
+				NodeList children = e.getChildNodes();
+				for (int i = 0; i < children.getLength(); i++) {
+					Node child = children.item(i);
+					if (child instanceof Element) {
+						if (first.matches((Element)child, cond))
+							if (rest == null || matchesRelative(rest, (Element)child, cond))
+								return true; }}
+				if (combinator == Selector.Combinator.DESCENDANT) {
+					for (int i = 0; i < children.getLength(); i++) {
+						Node child = children.item(i);
+						if (child instanceof Element) {
+							if (matchesRelative(selector, (Element)child, cond))
+								return true; }}}
+				break;
+			case ADJACENT:
+			case PRECEDING:
+				Node next = e.getNextSibling();
+				while (next != null && !(next instanceof Element))
+					next = next.getNextSibling();
+				if (next != null) {
+					if (first.matches((Element)next, cond))
+						if (rest == null || matchesRelative(rest, (Element)next, cond))
+							return true;
+					if (combinator == Selector.Combinator.PRECEDING) {
+						if (matchesRelative(selector, (Element)next, cond))
+							return true; }}
+				break;
+			}
+			return false;
+		}
+		
+		public void computeSpecificity(Specificity spec) {
+			for (CombinedSelector cs : relativeSelector)
+				for (Selector s : cs)
+					s.computeSpecificity(spec);
+		}
+		
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			return prime + relativeSelector.hashCode();
+		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			RelationalPseudoClassImpl other = (RelationalPseudoClassImpl) obj;
+			if (!relativeSelector.equals(other.relativeSelector))
 				return false;
 			return true;
 		}

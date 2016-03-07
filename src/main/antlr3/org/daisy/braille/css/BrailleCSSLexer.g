@@ -37,3 +37,5 @@ MARGIN_AREA
   ;
 
 NOT : 'not(' ;
+
+HAS : 'has(' ;
