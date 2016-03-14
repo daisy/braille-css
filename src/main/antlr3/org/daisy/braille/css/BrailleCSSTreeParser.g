@@ -105,11 +105,11 @@ pseudo returns [cz.vutbr.web.css.Selector.PseudoPage pseudoPage]
               }
           }
       }
-    | ^(PSEUDOCLASS NOT s=selector) {
-          $pseudoPage = new SelectorImpl.NegationPseudoClassImpl(s);
+    | ^(PSEUDOCLASS NOT sl=selector_list) {
+          $pseudoPage = new SelectorImpl.NegationPseudoClassImpl(sl);
       }
-    | ^(PSEUDOCLASS HAS ss=relative_selectors) {
-          $pseudoPage = new SelectorImpl.RelationalPseudoClassImpl(ss);
+    | ^(PSEUDOCLASS HAS rsl=relative_selector_list) {
+          $pseudoPage = new SelectorImpl.RelationalPseudoClassImpl(rsl);
       }
     | ^(PSEUDOCLASS f=FUNCTION i=IDENT) {
           $pseudoPage = gCSSTreeParser.rf.createPseudoClassFunction(f.getText(), i.getText());
@@ -161,7 +161,14 @@ pseudo returns [cz.vutbr.web.css.Selector.PseudoPage pseudoPage]
       }
     ;
 
-relative_selectors returns [List<cz.vutbr.web.css.CombinedSelector> list]
+selector_list returns [List<cz.vutbr.web.css.Selector> list]
+@init {
+    $list = new ArrayList<cz.vutbr.web.css.Selector>();
+}
+    : (s=selector { list.add(s); })+
+    ;
+
+relative_selector_list returns [List<cz.vutbr.web.css.CombinedSelector> list]
 @init {
     $list = new ArrayList<cz.vutbr.web.css.CombinedSelector>();
 }

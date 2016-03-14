@@ -79,18 +79,24 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 	
 	public static class NegationPseudoClassImpl implements PseudoClass {
 		
-		private final Selector negatedSelector;
+		private final List<Selector> negatedSelector;
 		
-		public NegationPseudoClassImpl(Selector negatedSelector) {
+		public NegationPseudoClassImpl(List<Selector> negatedSelector) {
+			if (negatedSelector.size() < 1)
+				throw new RuntimeException(":not() must not be empty");
 			this.negatedSelector = negatedSelector;
 		}
 		
 		public boolean matches(Element e, MatchCondition cond) {
-			return !negatedSelector.matches(e, cond);
+			for (Selector s : negatedSelector)
+				if (s.matches(e, cond))
+					return false;
+			return true;
 		}
 		
 		public void computeSpecificity(Specificity spec) {
-			negatedSelector.computeSpecificity(spec);
+			for (Selector s : negatedSelector)
+				s.computeSpecificity(spec);
 		}
 		
 		@Override
@@ -126,9 +132,9 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 		
 		public boolean matches(Element e, MatchCondition cond) {
 			for (CombinedSelector s : relativeSelector)
-				if (!matchesRelative(s, e, cond))
-					return false;
-			return true;
+				if (matchesRelative(s, e, cond))
+					return true;
+			return false;
 		}
 		
 		public static boolean matchesRelative(List<Selector> selector, Element e, MatchCondition cond) {

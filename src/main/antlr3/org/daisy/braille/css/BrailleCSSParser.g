@@ -38,8 +38,8 @@ volume_area
 pseudo
     : pseudocolon^ (
         MINUS? IDENT
-      | NOT selector RPAREN!
-      | HAS relative_selector (COMMA! relative_selector)* RPAREN!
+      | NOT selector (COMMA! S!* selector)* RPAREN!
+      | HAS relative_selector (COMMA! S!* relative_selector)* RPAREN!
       | FUNCTION S!* (IDENT | MINUS? NUMBER | MINUS? INDEX) S!* RPAREN!
       )
     ;
@@ -53,7 +53,9 @@ relative_selector
 
 combinator_selector
     : selector -> DESCENDANT selector
-    | combinator selector
+	| GREATER S* selector -> CHILD selector
+	| PLUS S* selector -> ADJACENT selector
+	| TILDE S* selector -> PRECEDING selector
     ;
 
 inlineset

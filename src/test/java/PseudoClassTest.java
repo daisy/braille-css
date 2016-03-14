@@ -54,34 +54,40 @@ public class PseudoClassTest {
 	@Test
 	public void testNegationPseudoClass() throws CSSException, IOException, SAXException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
-			":not(.foo) { display: none }",
+			":not(.foo,.bar) { display: none }",
 			new DefaultNetworkProcessor(), null, SourceType.EMBEDDED, new URL("file:///base/url/is/not/specified"));
 		assertEquals(1, sheet.size());
 		RuleSet rule = (RuleSet)sheet.get(0);
 		List<CombinedSelector> cslist = new ArrayList<CombinedSelector>();
 		CombinedSelector cs = (CombinedSelector)rf.createCombinedSelector().unlock();
+		List<Selector> negated = new ArrayList<Selector>();
 		Selector s = (Selector)rf.createSelector().unlock();
-		Selector negated = (Selector)rf.createSelector().unlock();
-		negated.add(rf.createClass("foo"));
+		s.add(rf.createClass("foo"));
+		negated.add(s);
+		s = (Selector)rf.createSelector().unlock();
+		s.add(rf.createClass("bar"));
+		negated.add(s);
+		s = (Selector)rf.createSelector().unlock();
 		s.add(new NegationPseudoClassImpl(negated));
 		cs.add(s);
 		cslist.add(cs);
 		assertEquals(cslist, rule.getSelectors());
 		DOMParser parser = new DOMParser();
 		parser.parse(new InputSource(new ByteArrayInputStream(
-			"<html><div class='foo'></div><div></div><div></div></html>"
+			"<html><div class='foo'/><div/><div class='bar'/><div class='baz'></div></html>"
 			.getBytes(StandardCharsets.UTF_8))));
 		Document doc = parser.getDocument();
 		NodeList divs = doc.getElementsByTagName("div");
 		assertFalse(s.matches((Element)divs.item(0)));
 		assertTrue(s.matches((Element)divs.item(1)));
-		assertTrue(s.matches((Element)divs.item(2)));
+		assertFalse(s.matches((Element)divs.item(2)));
+		assertTrue(s.matches((Element)divs.item(3)));
 	}
 	
 	@Test
 	public void testRelationalPseudoClass() throws CSSException, IOException, SAXException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
-			":has(.foo) { display: none }",
+			":has(.foo,.bar) { display: none }",
 			new DefaultNetworkProcessor(), null, SourceType.EMBEDDED, new URL("file:///base/url/is/not/specified"));
 		assertEquals(1, sheet.size());
 		RuleSet rule = (RuleSet)sheet.get(0);
@@ -94,6 +100,12 @@ public class PseudoClassTest {
 		cs.add(s);
 		relative.add(cs);
 		s = (Selector)rf.createSelector().unlock();
+		s.add(rf.createClass("bar"));
+		s.setCombinator(Combinator.DESCENDANT);
+		cs = (CombinedSelector)rf.createCombinedSelector().unlock();
+		cs.add(s);
+		relative.add(cs);
+		s = (Selector)rf.createSelector().unlock();
 		s.add(new RelationalPseudoClassImpl(relative));
 		cs = (CombinedSelector)rf.createCombinedSelector().unlock();
 		cs.add(s);
@@ -101,7 +113,7 @@ public class PseudoClassTest {
 		assertEquals(cslist, rule.getSelectors());
 		DOMParser parser = new DOMParser();
 		parser.parse(new InputSource(new ByteArrayInputStream(
-			"<html><div><span class='foo'></span></div><div></div><div></div></html>"
+			"<html><div><span class='bar'/></div><div/><div/></html>"
 			.getBytes(StandardCharsets.UTF_8))));
 		Document doc = parser.getDocument();
 		NodeList divs = doc.getElementsByTagName("div");
@@ -111,9 +123,9 @@ public class PseudoClassTest {
 	}
 	
 	@Test
-	public void testNegationAndRelationalPseudoClass() throws CSSException, IOException, SAXException {
+	public void testNegationCombinedWithRelationalPseudoClass() throws CSSException, IOException, SAXException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
-			":not(:has(.foo)) { display: none }",
+			":not(:has(:not(.foo, .bar))) { display: none }",
 			new DefaultNetworkProcessor(), null, SourceType.EMBEDDED, new URL("file:///base/url/is/not/specified"));
 		assertEquals(1, sheet.size());
 		RuleSet rule = (RuleSet)sheet.get(0);
@@ -124,12 +136,12 @@ public class PseudoClassTest {
 		Selector s = cs.get(0);
 		DOMParser parser = new DOMParser();
 		parser.parse(new InputSource(new ByteArrayInputStream(
-			"<html><div><span class='foo'></span></div><div></div><div></div></html>"
+			"<html><div><span class='bar'/></div><div><span/></div><div/></html>"
 			.getBytes(StandardCharsets.UTF_8))));
 		Document doc = parser.getDocument();
 		NodeList divs = doc.getElementsByTagName("div");
-		assertFalse(s.matches((Element)divs.item(0)));
-		assertTrue(s.matches((Element)divs.item(1)));
+		assertTrue(s.matches((Element)divs.item(0)));
+		assertFalse(s.matches((Element)divs.item(1)));
 		assertTrue(s.matches((Element)divs.item(2)));
 	}
 }
