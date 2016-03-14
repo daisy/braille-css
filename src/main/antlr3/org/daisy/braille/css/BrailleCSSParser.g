@@ -38,8 +38,8 @@ volume_area
 pseudo
     : pseudocolon^ (
         MINUS? IDENT
-      | NOT selector (COMMA! S!* selector)* RPAREN!
-      | HAS relative_selector (COMMA! S!* relative_selector)* RPAREN!
+      | NOT S!* selector (COMMA! S!* selector)* RPAREN!
+      | HAS S!* relative_selector (COMMA! S!* relative_selector)* RPAREN!
       | FUNCTION S!* (IDENT | MINUS? NUMBER | MINUS? INDEX) S!* RPAREN!
       )
     ;
