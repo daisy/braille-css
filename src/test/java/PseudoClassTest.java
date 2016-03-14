@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cz.vutbr.web.css.CombinedSelector;
+import cz.vutbr.web.css.CombinedSelector.Specificity;
+import cz.vutbr.web.css.CombinedSelector.Specificity.Level;
 import cz.vutbr.web.css.CSSException;
 import cz.vutbr.web.css.CSSFactory;
 import cz.vutbr.web.css.RuleFactory;
@@ -16,6 +18,7 @@ import cz.vutbr.web.css.Selector.Combinator;
 import cz.vutbr.web.css.Selector.PseudoElement;
 import cz.vutbr.web.css.StyleSheet;
 import cz.vutbr.web.csskit.antlr.CSSParserFactory.SourceType;
+import cz.vutbr.web.csskit.CombinedSelectorImpl.SpecificityImpl;
 import cz.vutbr.web.csskit.DefaultNetworkProcessor;
 
 import org.apache.xerces.parsers.DOMParser;
@@ -72,6 +75,9 @@ public class PseudoClassTest {
 		cs.add(s);
 		cslist.add(cs);
 		assertEquals(cslist, rule.getSelectors());
+		Specificity spec = new SpecificityImpl();
+		spec.add(Level.C);
+		assertEquals(cs.computeSpecificity(), spec);
 		DOMParser parser = new DOMParser();
 		parser.parse(new InputSource(new ByteArrayInputStream(
 			"<html><div class='foo'/><div/><div class='bar'/><div class='baz'></div></html>"
@@ -111,6 +117,9 @@ public class PseudoClassTest {
 		cs.add(s);
 		cslist.add(cs);
 		assertEquals(cslist, rule.getSelectors());
+		Specificity spec = new SpecificityImpl();
+		spec.add(Level.C);
+		assertEquals(cs.computeSpecificity(), spec);
 		DOMParser parser = new DOMParser();
 		parser.parse(new InputSource(new ByteArrayInputStream(
 			"<html><div><span class='bar'/></div><div/><div/></html>"
@@ -133,6 +142,9 @@ public class PseudoClassTest {
 		assertEquals(1, cslist.size());
 		CombinedSelector cs = cslist.get(0);
 		assertEquals(1, cslist.size());
+		Specificity spec = new SpecificityImpl();
+		spec.add(Level.C);
+		assertEquals(cs.computeSpecificity(), spec);
 		Selector s = cs.get(0);
 		DOMParser parser = new DOMParser();
 		parser.parse(new InputSource(new ByteArrayInputStream(

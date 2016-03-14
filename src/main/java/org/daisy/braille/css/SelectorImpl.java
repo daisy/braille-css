@@ -12,6 +12,7 @@ import cz.vutbr.web.css.MatchCondition;
 import cz.vutbr.web.css.Selector;
 import cz.vutbr.web.css.Selector.Combinator;
 import cz.vutbr.web.csskit.OutputUtil;
+import cz.vutbr.web.csskit.CombinedSelectorImpl.SpecificityImpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,9 +95,16 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 			return true;
 		}
 		
-		public void computeSpecificity(Specificity spec) {
-			for (Selector s : negatedSelector)
-				s.computeSpecificity(spec);
+		public void computeSpecificity(Specificity specificity) {
+			Selector mostSpecificSelector = null;
+			Specificity highestSpecificity = null;
+			for (Selector sel : negatedSelector) {
+				Specificity spec = new SpecificityImpl();
+				sel.computeSpecificity(spec);
+				if (highestSpecificity == null || spec.compareTo(highestSpecificity) > 0) {
+					mostSpecificSelector = sel;
+					highestSpecificity = spec; }}
+			mostSpecificSelector.computeSpecificity(specificity);
 		}
 		
 		@Override
@@ -180,10 +188,18 @@ public class SelectorImpl extends cz.vutbr.web.csskit.SelectorImpl {
 			return false;
 		}
 		
-		public void computeSpecificity(Specificity spec) {
-			for (CombinedSelector cs : relativeSelector)
-				for (Selector s : cs)
+		public void computeSpecificity(Specificity specificity) {
+			CombinedSelector mostSpecificSelector = null;
+			Specificity highestSpecificity = null;
+			for (CombinedSelector sel : relativeSelector) {
+				Specificity spec = new SpecificityImpl();
+				for (Selector s : sel)
 					s.computeSpecificity(spec);
+				if (highestSpecificity == null || spec.compareTo(highestSpecificity) > 0) {
+					mostSpecificSelector = sel;
+					highestSpecificity = spec; }}
+			for (Selector s : mostSpecificSelector)
+				s.computeSpecificity(specificity);
 		}
 		
 		@Override
