@@ -22,7 +22,7 @@ unknown_atrule
     ;
 
 volume
-    : VOLUME volume_pseudo? S* LCURLY S* declarations volume_area* RCURLY
+    : VOLUME S* volume_pseudo? S* LCURLY S* declarations volume_area* RCURLY
       -> ^(VOLUME volume_pseudo? declarations ^(SET volume_area*))
     ;
 
