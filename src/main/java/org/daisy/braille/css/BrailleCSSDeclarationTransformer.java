@@ -224,8 +224,20 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 	@SuppressWarnings("unused")
 	private boolean processListStyleType(Declaration d,
 			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
-		return genericOneIdentOrDotPattern(ListStyleType.class, ListStyleType.dot_pattern,
-				d, properties, values);
+		if (d.size() != 1)
+			return false;
+		Term<?> term = d.get(0);
+		if (genericTermIdent(ListStyleType.class, term, ALLOW_INH, d.getProperty(), properties))
+			return true;
+		else
+			try {
+				if (TermString.class.isInstance(term)) {
+					String propertyName = d.getProperty();
+					properties.put(propertyName, ListStyleType.braille_string);
+					values.put(propertyName, term);
+					return true; }}
+			catch (Exception e) {}
+		return false;
 	}
 	
 	@SuppressWarnings("unused")
