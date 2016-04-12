@@ -235,6 +235,12 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 					String propertyName = d.getProperty();
 					properties.put(propertyName, ListStyleType.braille_string);
 					values.put(propertyName, term);
+					return true; }
+				else if (TermFunction.class.isInstance(term)
+				         && "symbols".equals(((TermFunction)term).getFunctionName().toLowerCase())) {
+					String propertyName = d.getProperty();
+					properties.put(propertyName, ListStyleType.symbols_fn);
+					values.put(propertyName, term);
 					return true; }}
 			catch (Exception e) {}
 		return false;
