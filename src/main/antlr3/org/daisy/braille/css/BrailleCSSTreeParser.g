@@ -9,11 +9,13 @@ import CSSTreeParser;
 
 @header {
 package org.daisy.braille.css;
+import cz.vutbr.web.css.CombinedSelector;
 import cz.vutbr.web.css.Declaration;
 import cz.vutbr.web.css.MediaQuery;
 import cz.vutbr.web.css.RuleBlock;
 import cz.vutbr.web.css.RuleFactory;
 import cz.vutbr.web.css.RuleList;
+import cz.vutbr.web.css.Selector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 }
@@ -91,7 +93,7 @@ volume_area returns [RuleVolumeArea area]
       }
     ;
 
-pseudo returns [cz.vutbr.web.css.Selector.PseudoPage pseudoPage]
+pseudo returns [Selector.PseudoPage pseudoPage]
     : ^(PSEUDOCLASS m=MINUS? i=IDENT) {
           String name = i.getText();
           if (m != null) name = "-" + name;
@@ -163,23 +165,29 @@ pseudo returns [cz.vutbr.web.css.Selector.PseudoPage pseudoPage]
       }
     ;
 
-selector_list returns [List<cz.vutbr.web.css.Selector> list]
+selector_list returns [List<Selector> list]
 @init {
-    $list = new ArrayList<cz.vutbr.web.css.Selector>();
+    $list = new ArrayList<Selector>();
 }
     : (s=selector { list.add(s); })+
     ;
 
-relative_selector_list returns [List<cz.vutbr.web.css.CombinedSelector> list]
+relative_selector_list returns [List<CombinedSelector> list]
 @init {
-    $list = new ArrayList<cz.vutbr.web.css.CombinedSelector>();
+    $list = new ArrayList<CombinedSelector>();
 }
     : (s=relative_selector { list.add(s); })+
     ;
 
-relative_selector returns [cz.vutbr.web.css.CombinedSelector combinedSelector]
+relative_selector returns [CombinedSelector combinedSelector]
 @init {
-    $combinedSelector = (cz.vutbr.web.css.CombinedSelector)gCSSTreeParser.rf.createCombinedSelector().unlock();
+    $combinedSelector = (CombinedSelector)gCSSTreeParser.rf.createCombinedSelector().unlock();
 }
     : ASTERISK (c=combinator s=selector { combinedSelector.add(s.setCombinator(c)); })+
+    ;
+
+simple_inlinestyle returns [List<Declaration> style]
+    : ^(INLINESTYLE decl=declarations) {
+          $style = decl;
+      }
     ;

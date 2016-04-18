@@ -6,13 +6,13 @@ import java.util.List;
 
 import cz.vutbr.web.css.CSSException;
 import cz.vutbr.web.css.CSSFactory;
+import cz.vutbr.web.css.Declaration;
 import cz.vutbr.web.css.MediaQuery;
 import cz.vutbr.web.css.NetworkProcessor;
 import cz.vutbr.web.css.RuleFactory;
 import cz.vutbr.web.css.RuleList;
 import cz.vutbr.web.css.StyleSheet;
 import cz.vutbr.web.csskit.antlr.CSSInputStream;
-import cz.vutbr.web.csskit.antlr.CSSParserFactory.SourceType;
 import cz.vutbr.web.csskit.antlr.CSSParserFactory;
 import cz.vutbr.web.csskit.antlr.TreeUtil;
 
@@ -88,6 +88,26 @@ public class BrailleCSSParserFactory extends CSSParserFactory {
 			return null; }
 		catch (RecognitionException e) {
 			log.warn("Malformed media query {}", query);
+			return null; }
+	}
+	
+	public List<Declaration> parseSimpleInlineStyle(String style) {
+		try {
+			CSSInputStream input = CSSInputStream.stringStream(style);
+			CommonTokenStream tokens = feedLexer(input);
+			BrailleCSSParser parser = new BrailleCSSParser(tokens);
+			parser.init();
+			CommonTree ast = (CommonTree)parser.simple_inlinestyle().getTree();
+			BrailleCSSTreeParser tparser = feedAST(tokens, ast, null, null);
+			return tparser.simple_inlinestyle(); }
+		catch (IOException e) {
+			log.error("I/O error during inline style parsing: {}", e.getMessage());
+			return null; }
+		catch (CSSException e) {
+			log.warn("Malformed inline style {}", style);
+			return null; }
+		catch (RecognitionException e) {
+			log.warn("Malformed inline style {}", style);
 			return null; }
 	}
 	

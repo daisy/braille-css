@@ -95,3 +95,7 @@ noprop
     | INVALID_TOKEN -> INVALID_TOKEN
     ) !S*
     ;
+
+simple_inlinestyle
+    : S* (declarations -> ^(INLINESTYLE declarations))
+    ;
