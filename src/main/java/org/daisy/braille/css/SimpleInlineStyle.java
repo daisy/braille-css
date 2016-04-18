@@ -1,11 +1,14 @@
 package org.daisy.braille.css;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import cz.vutbr.web.css.CSSFactory;
 import cz.vutbr.web.css.Declaration;
 import cz.vutbr.web.css.NodeData;
 import cz.vutbr.web.css.SupportedCSS;
+import cz.vutbr.web.css.Term;
 import cz.vutbr.web.domassign.DeclarationTransformer;
 import cz.vutbr.web.domassign.SingleMapNodeData;
 
@@ -44,5 +47,22 @@ public class SimpleInlineStyle extends SingleMapNodeData implements NodeData {
 	
 	public boolean isEmpty() {
 		return map.isEmpty();
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		List<String> keys = new ArrayList<String>(map.keySet());
+		Collections.sort(keys);
+		for (String key: keys) {
+			if (sb.length() > 0)
+				sb.append("; ");
+			sb.append(key).append(": ");
+			Term<?> value = getValue(key, false);
+			if (value != null)
+				sb.append(value);
+			else
+				sb.append(getProperty(key)); }
+		return sb.toString();
 	}
 }
