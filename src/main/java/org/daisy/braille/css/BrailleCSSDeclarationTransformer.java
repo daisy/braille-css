@@ -216,8 +216,12 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 	@SuppressWarnings("unused")
 	private boolean processLetterSpacing(Declaration d,
 			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
-		return genericOneIdentOrInteger(LetterSpacing.class, LetterSpacing.length, true,
-				d, properties, values);
+		if (genericOneIdentOrInteger(LetterSpacing.class, LetterSpacing.length, true,
+				d, properties, values))
+			return true;
+		else {
+			log.warn("{} not supported, illegal number", d);
+			return false; }
 	}
 	
 	@SuppressWarnings("unused")
@@ -466,8 +470,12 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 	@SuppressWarnings("unused")
 	private boolean processWordSpacing(Declaration d,
 			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
-		return genericOneIdentOrInteger(WordSpacing.class, WordSpacing.length, true,
-				d, properties, values);
+		if (genericOneIdentOrInteger(WordSpacing.class, WordSpacing.length, true,
+				d, properties, values))
+			return true;
+		else {
+			log.warn("{} not supported, illegal number", d);
+			return false; }
 	}
 	
 	/****************************************************************
