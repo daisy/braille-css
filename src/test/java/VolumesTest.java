@@ -19,13 +19,11 @@ import org.daisy.braille.css.SupportedBrailleCSS;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import org.junit.Before;
 import org.junit.Test;
 
 public class VolumesTest {
 	
-	@Before
-	public void init() {
+	public VolumesTest() {
 		CSSFactory.registerSupportedCSS(SupportedBrailleCSS.getInstance());
 		CSSFactory.registerDeclarationTransformer(new BrailleCSSDeclarationTransformer());
 	}

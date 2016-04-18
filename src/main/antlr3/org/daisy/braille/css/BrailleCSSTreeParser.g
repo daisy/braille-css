@@ -12,6 +12,7 @@ package org.daisy.braille.css;
 import cz.vutbr.web.css.Declaration;
 import cz.vutbr.web.css.MediaQuery;
 import cz.vutbr.web.css.RuleBlock;
+import cz.vutbr.web.css.RuleFactory;
 import cz.vutbr.web.css.RuleList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +23,9 @@ import org.slf4j.LoggerFactory;
     
     private Preparator preparator;
     
-    public void init(Preparator preparator, List<MediaQuery> wrapMedia) {
+    public void init(Preparator preparator, List<MediaQuery> wrapMedia, RuleFactory ruleFactory) {
         gCSSTreeParser.init(preparator, wrapMedia);
+        gCSSTreeParser.rf = ruleFactory;
         this.preparator = preparator;
     }
     

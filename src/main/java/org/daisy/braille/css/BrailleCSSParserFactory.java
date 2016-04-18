@@ -8,6 +8,7 @@ import cz.vutbr.web.css.CSSException;
 import cz.vutbr.web.css.CSSFactory;
 import cz.vutbr.web.css.MediaQuery;
 import cz.vutbr.web.css.NetworkProcessor;
+import cz.vutbr.web.css.RuleFactory;
 import cz.vutbr.web.css.RuleList;
 import cz.vutbr.web.css.StyleSheet;
 import cz.vutbr.web.csskit.antlr.CSSInputStream;
@@ -29,10 +30,12 @@ import org.w3c.dom.Element;
 
 public class BrailleCSSParserFactory extends CSSParserFactory {
 	
+	private static final RuleFactory ruleFactory = new BrailleCSSRuleFactory();
+	
 	@Override
 	public StyleSheet parse(Object source, NetworkProcessor network, String encoding, SourceType type,
 	                        Element inline, boolean inlinePriority, URL base) throws IOException, CSSException {
-		StyleSheet sheet = (StyleSheet) CSSFactory.getRuleFactory().createStyleSheet().unlock();
+		StyleSheet sheet = (StyleSheet)ruleFactory.createStyleSheet().unlock();
 		Preparator preparator = new Preparator(inline, inlinePriority);
 		StyleSheet ret = parseAndImport(source, network, encoding, type, sheet, preparator, base, null);
 		return ret;
@@ -124,7 +127,7 @@ public class BrailleCSSParserFactory extends CSSParserFactory {
 		CommonTreeNodeStream nodes = new CommonTreeNodeStream(ast);
 		nodes.setTokenStream(source);
 		BrailleCSSTreeParser parser = new BrailleCSSTreeParser(nodes);
-		parser.init(preparator, media);
+		parser.init(preparator, media, ruleFactory);
 		return parser;
 	}
 	

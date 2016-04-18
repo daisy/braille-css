@@ -23,18 +23,15 @@ import org.daisy.braille.css.SupportedBrailleCSS;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import org.junit.Before;
 import org.junit.Test;
 
 public class PseudoElementsTest {
 	
 	private static final RuleFactory rf = new BrailleCSSRuleFactory();
 	
-	@Before
-	public void init() {
+	public PseudoElementsTest() {
 		CSSFactory.registerSupportedCSS(SupportedBrailleCSS.getInstance());
 		CSSFactory.registerDeclarationTransformer(new BrailleCSSDeclarationTransformer());
-		CSSFactory.registerRuleFactory(rf);
 	}
 	
 	@Test

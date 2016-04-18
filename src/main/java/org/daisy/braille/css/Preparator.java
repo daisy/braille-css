@@ -3,14 +3,18 @@ package org.daisy.braille.css;
 import java.util.List;
 
 import cz.vutbr.web.css.Declaration;
+import cz.vutbr.web.css.RuleFactory;
 import cz.vutbr.web.csskit.antlr.SimplePreparator;
 
 import org.w3c.dom.Element;
 
 public class Preparator extends SimplePreparator {
 	
+	private static final RuleFactory ruleFactoryInstance = new BrailleCSSRuleFactory();
+	
 	public Preparator(Element e, boolean inlinePriority) {
 		super(e, inlinePriority);
+		rf = ruleFactoryInstance;
 	}
 	
 	public RuleVolume prepareRuleVolume(List<Declaration> declarations,
