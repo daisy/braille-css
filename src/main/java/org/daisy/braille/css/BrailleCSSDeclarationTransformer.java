@@ -30,7 +30,6 @@ import org.daisy.braille.css.BrailleCSSProperty.TextTransform;
 import org.daisy.braille.css.BrailleCSSProperty.WhiteSpace;
 import org.daisy.braille.css.BrailleCSSProperty.WordSpacing;
 
-import cz.vutbr.web.css.CSSFactory;
 import cz.vutbr.web.css.CSSProperty;
 import cz.vutbr.web.css.CSSProperty.GenericCSSPropertyProxy;
 import cz.vutbr.web.css.Declaration;
@@ -47,22 +46,27 @@ import cz.vutbr.web.domassign.Repeater;
 
 public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 	
-	private final SupportedCSS css;
-	private final Map<String,Method> methods;
-	
-	public BrailleCSSDeclarationTransformer() {
-		super();
-		css = CSSFactory.getSupportedCSS();
-		methods = new HashMap<String,Method>();
+	protected Map<String, Method> parsingMethods() {
+		Map<String, Method> map = new HashMap<String, Method>(css.getTotalProperties(), 1.0f);
 		for (String property : css.getDefinedPropertyNames()) {
 			try {
-				Method method = BrailleCSSDeclarationTransformer.class.getDeclaredMethod(
+				Method m = BrailleCSSDeclarationTransformer.class.getDeclaredMethod(
 					camelCase("process-" + property),
 					Declaration.class, Map.class, Map.class);
-				methods.put(property, method);
+				map.put(property, m);
 			} catch (Exception e) {
+				try {
+					Method m = DeclarationTransformer.class.getDeclaredMethod(
+						DeclarationTransformer.camelCase("process-" + property),
+						Declaration.class, Map.class, Map.class);
+					map.put(property, m);
+				} catch (Exception e2) {
+					log.warn("Unable to find method for property {}.", property);
+				}
 			}
 		}
+		log.info("Totally found {} parsing methods", map.size());
+		return map;
 	}
 	
 	@Override
@@ -85,11 +89,13 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 			try {
 				Method m = methods.get(property);
 				if (m != null)
-					return (Boolean)m.invoke(this, d, properties, values);
-				else
-					return super.parseDeclaration(d, properties, values);
-			} catch (Exception e) {
-			}
+					try {
+						return (Boolean)m.invoke(this, d, properties, values);
+					} catch (Exception e) {
+						return super.parseDeclaration(d, properties, values);
+					}
+				} catch (Exception e) {
+				}
 		log.warn("Ignoring unsupported declaration: " + d);
 		return false;
 	}
