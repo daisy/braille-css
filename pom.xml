@@ -12,7 +12,7 @@
 
   <groupId>org.daisy.braille</groupId>
   <artifactId>braille-css</artifactId>
-  <version>1.8.1-SNAPSHOT</version>
+  <version>1.9.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>braille-css</name>
@@ -32,7 +32,7 @@
         <!--
             depends on master
         -->
-        <version>1.20-p6-SNAPSHOT</version>
+        <version>1.20-p7-SNAPSHOT</version>
         <exclusions>
           <exclusion>
             <groupId>xerces</groupId>
