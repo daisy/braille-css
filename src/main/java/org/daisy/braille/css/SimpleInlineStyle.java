@@ -49,6 +49,10 @@ public class SimpleInlineStyle extends SingleMapNodeData implements NodeData {
 		return map.isEmpty();
 	}
 	
+	public int size() {
+		return map.size();
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
