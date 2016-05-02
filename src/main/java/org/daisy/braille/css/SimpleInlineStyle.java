@@ -12,7 +12,7 @@ import cz.vutbr.web.css.Term;
 import cz.vutbr.web.domassign.DeclarationTransformer;
 import cz.vutbr.web.domassign.SingleMapNodeData;
 
-public class SimpleInlineStyle extends SingleMapNodeData implements NodeData {
+public class SimpleInlineStyle extends SingleMapNodeData implements NodeData, Cloneable {
 	
 	private final static SupportedCSS cssInstance = SupportedBrailleCSS.getInstance();
 	private static BrailleCSSDeclarationTransformer transformerInstance; static {
@@ -51,6 +51,13 @@ public class SimpleInlineStyle extends SingleMapNodeData implements NodeData {
 	
 	public int size() {
 		return map.size();
+	}
+	
+	@Override
+	public Object clone() {
+		
+		// FIXME: instead of serializing and parsing again, clone the map field directly
+		return new SimpleInlineStyle(toString());
 	}
 	
 	@Override
