@@ -22,16 +22,18 @@ public class SimpleInlineStyle extends SingleMapNodeData implements NodeData, Cl
 	private final static BrailleCSSParserFactory parserFactory = new BrailleCSSParserFactory();
 	
 	public SimpleInlineStyle(String style) {
-		super();
-		transformer = transformerInstance;
-		css = cssInstance;
-		for (Declaration d : parserFactory.parseSimpleInlineStyle(style)) {
-			// SupportedCSS injected via CSSFactory in Repeater.assignDefaults, Variator.assignDefaults
-			CSSFactory.registerSupportedCSS(css);
-			push(d); }
+		this(style, null);
+	}
+	
+	public SimpleInlineStyle(String style, SimpleInlineStyle parentStyle) {
+		this(parserFactory.parseSimpleInlineStyle(style), parentStyle);
 	}
 	
 	public SimpleInlineStyle(List<Declaration> declarations) {
+		this(declarations, null);
+	}
+	
+	public SimpleInlineStyle(List<Declaration> declarations, SimpleInlineStyle parentStyle) {
 		super();
 		transformer = transformerInstance;
 		css = cssInstance;
@@ -39,8 +41,13 @@ public class SimpleInlineStyle extends SingleMapNodeData implements NodeData, Cl
 			// SupportedCSS injected via CSSFactory in Repeater.assignDefaults, Variator.assignDefaults
 			CSSFactory.registerSupportedCSS(css);
 			push(d); }
+		if (parentStyle != null)
+			inheritFrom(parentStyle);
 	}
 	
+	public Term<?> getValue(String name) {
+		return getValue(name, true);
+	}
 	public void removeProperty(String name) {
 		map.remove(name);
 	}
@@ -69,7 +76,7 @@ public class SimpleInlineStyle extends SingleMapNodeData implements NodeData, Cl
 			if (sb.length() > 0)
 				sb.append("; ");
 			sb.append(key).append(": ");
-			Term<?> value = getValue(key, false);
+			Term<?> value = getValue(key);
 			if (value != null)
 				sb.append(value);
 			else
