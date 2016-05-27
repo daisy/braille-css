@@ -76,4 +76,11 @@ public class SimpleInlineStyle extends SingleMapNodeData implements NodeData, Cl
 				sb.append(getProperty(key)); }
 		return sb.toString();
 	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof SimpleInlineStyle)
+			return map.equals(((SimpleInlineStyle)other).map);
+		return false;
+	}
 }

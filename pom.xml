@@ -12,7 +12,7 @@
 
   <groupId>org.daisy.braille</groupId>
   <artifactId>braille-css</artifactId>
-  <version>1.9.1-SNAPSHOT</version>
+  <version>1.10.2-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>braille-css</name>
@@ -29,10 +29,7 @@
       <dependency>
         <groupId>org.daisy.libs</groupId>
         <artifactId>jstyleparser</artifactId>
-        <!--
-            depends on master
-        -->
-        <version>1.20-p7-SNAPSHOT</version>
+        <version>1.20-p8</version>
         <exclusions>
           <exclusion>
             <groupId>xerces</groupId>
