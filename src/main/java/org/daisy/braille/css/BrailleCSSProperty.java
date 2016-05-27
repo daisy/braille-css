@@ -437,7 +437,7 @@ public interface BrailleCSSProperty extends CSSProperty {
 		}
 		
 		public boolean inherited() {
-			return false;
+			return true;
 		}
 		
 		public boolean equalsInherit() {
