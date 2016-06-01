@@ -61,13 +61,6 @@ public class SimpleInlineStyle extends SingleMapNodeData implements NodeData, Cl
 	}
 	
 	@Override
-	public Object clone() {
-		
-		// FIXME: instead of serializing and parsing again, clone the map field directly
-		return new SimpleInlineStyle(toString());
-	}
-	
-	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		List<String> keys = new ArrayList<String>(map.keySet());
