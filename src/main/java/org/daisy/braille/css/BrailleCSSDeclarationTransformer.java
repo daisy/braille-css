@@ -1,5 +1,6 @@
 package org.daisy.braille.css;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -87,20 +88,38 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 						return genericTerm(TermFunction.class, term, d.getProperty(),
 						                   null, false, properties, values);
 				}
+				log.warn("Ignoring unsupported declaration: " + declarationToString(d));
+			} else {
+				log.debug("Ignoring unsupported property: " + property);
 			}
-		} else
+		} else {
 			try {
 				Method m = methods.get(property);
 				if (m != null)
 					try {
 						return (Boolean)m.invoke(this, d, properties, values);
-					} catch (Exception e) {
-						return super.parseDeclaration(d, properties, values);
+					} catch (IllegalAccessException e) {
+						if (super.parseDeclaration(d, properties, values))
+							return true;
+					} catch (IllegalArgumentException e) {
+						if (super.parseDeclaration(d, properties, values))
+							return true;
+					} catch (InvocationTargetException e) {
 					}
-				} catch (Exception e) {
-				}
-		log.warn("Ignoring unsupported declaration: " + d);
+			} catch (Exception e) {
+			}
+			log.warn("Ignoring unsupported declaration: " + declarationToString(d));
+		}
 		return false;
+	}
+	
+	private static String declarationToString(Declaration d) {
+		StringBuilder b = new StringBuilder();
+		b.append(d.getProperty()).append(":");
+		for (Term<?> t : d)
+			b.append(" ").append(t);
+		b.append(";");
+		return b.toString();
 	}
 	
 	/****************************************************************
