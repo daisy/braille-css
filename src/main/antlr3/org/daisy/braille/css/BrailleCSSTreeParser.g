@@ -16,13 +16,9 @@ import cz.vutbr.web.css.RuleBlock;
 import cz.vutbr.web.css.RuleFactory;
 import cz.vutbr.web.css.RuleList;
 import cz.vutbr.web.css.Selector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 }
 
 @members {
-    private static Logger log = LoggerFactory.getLogger(BrailleCSSTreeParser.class);
-    
     private Preparator preparator;
     
     public void init(Preparator preparator, List<MediaQuery> wrapMedia, RuleFactory ruleFactory) {
@@ -47,7 +43,7 @@ import org.slf4j.LoggerFactory;
 unknown_atrule returns [RuleBlock<?> stmnt]
 @init { $stmnt = null; }
     : (v=volume) { $stmnt = v; }
-    | INVALID_ATSTATEMENT { log.debug("Skipping invalid at statement"); }
+    | INVALID_ATSTATEMENT { gCSSTreeParser.debug("Skipping invalid at statement"); }
     ;
 
 volume returns [RuleVolume stmnt]
@@ -78,7 +74,7 @@ volume_areas returns [List<RuleVolumeArea> list]
         ( a=volume_area {
             if (a!=null) {
               list.add(a);
-              log.debug("Inserted volume area rule #{} into @volume", $list.size()+1);
+              gCSSTreeParser.debug("Inserted volume area rule #{} into @volume", $list.size()+1);
             }
           }
         )*
@@ -104,7 +100,7 @@ pseudo returns [Selector.PseudoPage pseudoPage]
               try {
                   $pseudoPage = gCSSTreeParser.rf.createPseudoElement(name); }
               catch (Exception e2) {
-                  log.error("invalid pseudo declaration: " + name);
+                  gCSSTreeParser.error("invalid pseudo declaration: " + name);
                   $pseudoPage = null;
               }
           }
@@ -134,7 +130,7 @@ pseudo returns [Selector.PseudoPage pseudoPage]
           try {
               $pseudoPage = gCSSTreeParser.rf.createPseudoElement(name);
           } catch (Exception e) {
-              log.error("invalid pseudo declaration: " + name);
+              gCSSTreeParser.error("invalid pseudo declaration: " + name);
               $pseudoPage = null;
           }
       }
@@ -142,7 +138,7 @@ pseudo returns [Selector.PseudoPage pseudoPage]
           try {
               $pseudoPage = gCSSTreeParser.rf.createPseudoElementFunction(f.getText(), i.getText());
           } catch (Exception e) {
-            log.error("invalid pseudo declaration", e);
+            gCSSTreeParser.error("invalid pseudo declaration", e);
           }
       }
     | ^(PSEUDOELEM f=FUNCTION m=MINUS? n=NUMBER) {
@@ -151,7 +147,7 @@ pseudo returns [Selector.PseudoPage pseudoPage]
           try {
               $pseudoPage = gCSSTreeParser.rf.createPseudoElementFunction(f.getText(), exp);
           } catch (Exception e) {
-              log.error("invalid pseudo declaration", e);
+              gCSSTreeParser.error("invalid pseudo declaration", e);
           }
       }
     | ^(PSEUDOELEM f=FUNCTION m=MINUS? n=INDEX) {
@@ -160,7 +156,7 @@ pseudo returns [Selector.PseudoPage pseudoPage]
           try {
               $pseudoPage = gCSSTreeParser.rf.createPseudoElementFunction(f.getText(), exp);
           } catch (Exception e) {
-              log.error("invalid pseudo declaration", e);
+              gCSSTreeParser.error("invalid pseudo declaration", e);
           }
       }
     ;
