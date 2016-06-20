@@ -27,6 +27,8 @@ import org.daisy.braille.css.BrailleCSSProperty.StringSet;
 import org.daisy.braille.css.BrailleCSSProperty.TableHeaderPolicy;
 import org.daisy.braille.css.BrailleCSSProperty.TextIndent;
 import org.daisy.braille.css.BrailleCSSProperty.TextTransform;
+import org.daisy.braille.css.BrailleCSSProperty.VolumeBreak;
+import org.daisy.braille.css.BrailleCSSProperty.VolumeBreakInside;
 import org.daisy.braille.css.BrailleCSSProperty.WhiteSpace;
 import org.daisy.braille.css.BrailleCSSProperty.WordSpacing;
 
@@ -462,6 +464,39 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 		properties.put("text-transform", TextTransform.list_values);
 		values.put("text-transform", list);
 		return true;
+	}
+	
+	@SuppressWarnings("unused")
+	private boolean processVolumeBreakAfter(Declaration d,
+			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
+		return genericOneIdent(VolumeBreak.class, d, properties);
+	}
+	
+	@SuppressWarnings("unused")
+	private boolean processVolumeBreakBefore(Declaration d,
+			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
+		return genericOneIdent(VolumeBreak.class, d, properties);
+	}
+	
+	@SuppressWarnings("unused")
+	private boolean processVolumeBreakInside(Declaration d,
+			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
+		if (genericOneIdent(VolumeBreakInside.class, d, properties))
+			return true;
+		if (d.size() == 1) {
+			Term<?> term = d.get(0);
+			if (term instanceof TermFunction) {
+				TermFunction fun = (TermFunction)term;
+				if ("-obfl-keep".equals(fun.getFunctionName())
+					&& fun.size() == 1
+					&& fun.get(0) instanceof TermInteger) {
+					properties.put("volume-break-inside", VolumeBreakInside.obfl_keep);
+					values.put("volume-break-inside", fun);
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	@SuppressWarnings("unused")

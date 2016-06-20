@@ -450,6 +450,52 @@ public interface BrailleCSSProperty extends CSSProperty {
 		}
 	}
 	
+	public enum VolumeBreak implements BrailleCSSProperty {
+		ALWAYS("always"), AUTO("auto"), AVOID("avoid"), PREFER("prefer"), INHERIT("inherit");
+
+		private String text;
+
+		private VolumeBreak(String text) {
+			this.text = text;
+		}
+
+		public boolean inherited() {
+			return false;
+		}
+
+		public boolean equalsInherit() {
+			return this == INHERIT;
+		}
+
+		@Override
+		public String toString() {
+			return text;
+		}
+	}
+	
+	public enum VolumeBreakInside implements BrailleCSSProperty {
+		AUTO("auto"), AVOID("avoid"), INHERIT("inherit"), obfl_keep("");
+
+		private String text;
+
+		private VolumeBreakInside(String text) {
+			this.text = text;
+		}
+
+		public boolean inherited() {
+			return false;
+		}
+
+		public boolean equalsInherit() {
+			return this == INHERIT;
+		}
+
+		@Override
+		public String toString() {
+			return text;
+		}
+	}
+	
 	public enum WhiteSpace implements BrailleCSSProperty {
 		NORMAL("normal"), PRE_WRAP("pre-wrap"), PRE_LINE("pre-line"), INHERIT("inherit");
 		
