@@ -39,6 +39,8 @@ import org.daisy.braille.css.BrailleCSSProperty.StringSet;
 import org.daisy.braille.css.BrailleCSSProperty.TableHeaderPolicy;
 import org.daisy.braille.css.BrailleCSSProperty.TextIndent;
 import org.daisy.braille.css.BrailleCSSProperty.TextTransform;
+import org.daisy.braille.css.BrailleCSSProperty.VolumeBreak;
+import org.daisy.braille.css.BrailleCSSProperty.VolumeBreakInside;
 import org.daisy.braille.css.BrailleCSSProperty.WhiteSpace;
 import org.daisy.braille.css.BrailleCSSProperty.WordSpacing;
 
@@ -52,7 +54,7 @@ public class SupportedBrailleCSS implements SupportedCSS {
 	
 	private static Logger log = LoggerFactory.getLogger(SupportedBrailleCSS.class);
 	
-	private static final int TOTAL_SUPPORTED_DECLARATIONS = 44;
+	private static final int TOTAL_SUPPORTED_DECLARATIONS = 47;
 	
 	private static final TermFactory tf = CSSFactory.getTermFactory();
 	
@@ -197,9 +199,14 @@ public class SupportedBrailleCSS implements SupportedCSS {
 		props.put("widows", Widows.integer);
 		values.put("widows", DEFAULT_UA_WIDOWS);
 		
-		// volumes
+		// @volume rule
 		props.put("min-length", MinLength.AUTO);
 		props.put("max-length", MaxLength.AUTO);
+		
+		// volume breaking
+		props.put("volume-break-before", VolumeBreak.AUTO);
+		props.put("volume-break-after", VolumeBreak.AUTO);
+		props.put("volume-break-inside", VolumeBreakInside.AUTO);
 		
 		// tables
 		props.put("render-table-by", RenderTableBy.AUTO);
