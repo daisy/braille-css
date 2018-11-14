@@ -237,7 +237,7 @@ relative_rule returns [RuleSet rs]
     boolean invalid = false;
 }
     : ^(RULE
-        ((AMPERSAND s=selector) {
+        ((s=selector) {
             attach = true;
             // may not start with a type selector
             if (s.size() > 0 && s.get(0) instanceof ElementName) {
@@ -302,10 +302,16 @@ inlineblock returns [RuleBlock<?> b]
     : ^(RULE decl=declarations) {
           $b = preparator.prepareInlineRuleSet(decl, null);
       }
-    | rr=relative_rule { $b = rr; }
     | tt=text_transform_def { $b = tt; }
     | p=page { $b = p; }
     | v=volume { $b = v; }
+    | pm=margin { $b = pm; }
+    | va=volume_area { $b = va; }
+    | ^(AMPERSAND
+         (rr=relative_rule { $b = rr; }
+         |p=page { $b = new InlineStyle.RuleRelativePage(p); } // relative @page pseudo rule
+         |v=volume { $b = new InlineStyle.RuleRelativeVolume(v); } // relative @volume pseudo rule
+         ))
     ;
 
 // TODO: move to CSSTreeParser.g

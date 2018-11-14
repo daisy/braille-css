@@ -6,14 +6,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import com.google.common.collect.ForwardingList;
+
 import cz.vutbr.web.css.CombinedSelector;
 import cz.vutbr.web.css.Declaration;
+import cz.vutbr.web.css.Rule;
 import cz.vutbr.web.css.RuleBlock;
 import cz.vutbr.web.css.RuleFactory;
+import cz.vutbr.web.css.RuleMargin;
 import cz.vutbr.web.css.RulePage;
 import cz.vutbr.web.css.RuleSet;
 import cz.vutbr.web.css.Selector;
 import cz.vutbr.web.css.Selector.SelectorPart;
+import cz.vutbr.web.css.StyleSheet;
 import cz.vutbr.web.csskit.AbstractRuleBlock;
 
 import org.daisy.braille.css.SelectorImpl.PseudoElementImpl;
@@ -39,9 +44,13 @@ public class InlineStyle implements Cloneable, Iterable<RuleBlock<?>> {
 	private List<RuleBlock<?>> nestedStyles;
 	
 	public InlineStyle(String style) {
+		this(style, BrailleCSSParserFactory.Context.ELEMENT);
+	}
+	
+	public InlineStyle(String style, BrailleCSSParserFactory.Context context) {
 		nestedStyles = new ArrayList<RuleBlock<?>>();
 		List<Declaration> mainDeclarations = new ArrayList<Declaration>();
-		for (RuleBlock<?> block : parserFactory.parseInlineStyle(style)) {
+		for (RuleBlock<?> block : parserFactory.parseInlineStyle(style, context)) {
 			if (block == null) {}
 			else if (block instanceof RuleSet) {
 				RuleSet set = (RuleSet)block;
@@ -65,6 +74,10 @@ public class InlineStyle implements Cloneable, Iterable<RuleBlock<?>> {
 			} else if (block instanceof RuleTextTransform
 			           || block instanceof RulePage
 			           || block instanceof RuleVolume
+			           || block instanceof RuleMargin
+			           || block instanceof RuleVolumeArea
+			           || block instanceof RuleRelativePage
+			           || block instanceof RuleRelativeVolume
 			           ) {
 				nestedStyles.add(block);
 			} else {
@@ -162,6 +175,81 @@ public class InlineStyle implements Cloneable, Iterable<RuleBlock<?>> {
 		
 		public List<Selector> getSelector() {
 			return selector;
+		}
+	}
+	
+	private static abstract class ForwardingRuleBlock<E> extends ForwardingList<E> {
+		
+		final RuleBlock<E> delegate;
+		
+		ForwardingRuleBlock(RuleBlock<E> delegate) {
+			this.delegate = delegate;
+		}
+		
+		public List<E> delegate() {
+			return delegate;
+		}
+		
+		public StyleSheet getStyleSheet() {
+			return delegate.getStyleSheet();
+		}
+		
+		public void setStyleSheet(StyleSheet sheet) {
+			delegate.setStyleSheet(sheet);
+		}
+		
+		public List<E> asList() {
+			return delegate.asList();
+		}
+		
+		public Rule<E> replaceAll(List<E> replacement) {
+			return delegate.replaceAll(replacement);
+		}
+		
+		public Rule<E> unlock() {
+			return delegate.unlock();
+		}
+	}
+	
+	public static class RuleRelativePage extends ForwardingRuleBlock<Rule<?>> implements RuleBlock<Rule<?>> {
+		
+		private final RulePage page;
+		
+		public RuleRelativePage(RulePage page) {
+			super(page);
+			if (page.getName() != null || page.getPseudo() == null)
+				throw new RuntimeException();
+			this.page = page;
+		}
+		
+		public RulePage asRulePage() {
+			return page;
+		}
+		
+		@Override
+		public RuleRelativePage clone() {
+			return new RuleRelativePage((RulePage)delegate.clone());
+		}
+	}
+	
+	public static class RuleRelativeVolume extends ForwardingRuleBlock<Rule<?>> implements RuleBlock<Rule<?>> {
+		
+		private final RuleVolume volume;
+		
+		public RuleRelativeVolume(RuleVolume volume) {
+			super(volume);
+			if (volume.getPseudo() == null)
+				throw new RuntimeException();
+			this.volume = volume;
+		}
+		
+		public RuleVolume asRuleVolume() {
+			return volume;
+		}
+		
+		@Override
+		public RuleRelativeVolume clone() {
+			return new RuleRelativeVolume((RuleVolume)delegate.clone());
 		}
 	}
 	
