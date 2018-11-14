@@ -295,12 +295,8 @@ inlineblock returns [RuleBlock<?> b]
       }
     | rr=relative_rule { $b = rr; }
     | tt=text_transform_def { $b = tt; }
-
-// TODO: allowed as well but skip for now:
-//  | p=page { $b = p; }
-
-// TODO: need a slightly different format that allows @page inside @begin and @end:
-//  | v=volume { $b = v; }
+    | p=page { $b = p; }
+    | v=volume { $b = v; }
     ;
 
 // TODO: move to CSSTreeParser.g

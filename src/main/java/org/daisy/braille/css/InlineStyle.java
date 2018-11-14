@@ -10,6 +10,7 @@ import cz.vutbr.web.css.CombinedSelector;
 import cz.vutbr.web.css.Declaration;
 import cz.vutbr.web.css.RuleBlock;
 import cz.vutbr.web.css.RuleFactory;
+import cz.vutbr.web.css.RulePage;
 import cz.vutbr.web.css.RuleSet;
 import cz.vutbr.web.css.Selector;
 import cz.vutbr.web.css.Selector.SelectorPart;
@@ -35,12 +36,10 @@ public class InlineStyle implements Cloneable, Iterable<RuleBlock<?>> {
 	private final static RuleMainBlock emptyBlock = new RuleMainBlock();
 
 	private Optional<RuleMainBlock> mainStyle;
-	private List<RuleRelativeBlock> relativeRules;
-	private List<RuleTextTransform> textTransformDefs;
+	private List<RuleBlock<?>> nestedStyles;
 	
 	public InlineStyle(String style) {
-		relativeRules = new ArrayList<RuleRelativeBlock>();
-		textTransformDefs = new ArrayList<RuleTextTransform>();
+		nestedStyles = new ArrayList<RuleBlock<?>>();
 		List<Declaration> mainDeclarations = new ArrayList<Declaration>();
 		for (RuleBlock<?> block : parserFactory.parseInlineStyle(style)) {
 			if (block == null) {}
@@ -61,10 +60,13 @@ public class InlineStyle implements Cloneable, Iterable<RuleBlock<?>> {
 						relativeSelector.add(selector);
 					}
 					relativeSelector.addAll(combinedSelector.subList(1, combinedSelector.size()));
-					relativeRules.add(new RuleRelativeBlock(relativeSelector, set));
+					nestedStyles.add(new RuleRelativeBlock(relativeSelector, set));
 				}
-			} else if (block instanceof RuleTextTransform) {
-				textTransformDefs.add((RuleTextTransform)block);
+			} else if (block instanceof RuleTextTransform
+			           || block instanceof RulePage
+			           || block instanceof RuleVolume
+			           ) {
+				nestedStyles.add(block);
 			} else {
 				throw new RuntimeException("coding error");
 			}
@@ -81,8 +83,7 @@ public class InlineStyle implements Cloneable, Iterable<RuleBlock<?>> {
 	
 	public Iterator<RuleBlock<?>> iterator() {
 		final Iterator<RuleMainBlock> mainStyleItr = filterNonEmpty(mainStyle.listIterator());
-		final Iterator<RuleRelativeBlock> relativeRulesItr = filterNonEmpty(relativeRules.listIterator());
-		final Iterator<RuleTextTransform> textTransformDefsItr = filterNonEmpty(textTransformDefs.listIterator());
+		final Iterator<RuleBlock<?>> nestedStylesItr = filterNonEmpty(nestedStyles.listIterator());
 		return new Iterator<RuleBlock<?>>() {
 			int cursor = 0;
 			public boolean hasNext() {
@@ -91,11 +92,8 @@ public class InlineStyle implements Cloneable, Iterable<RuleBlock<?>> {
 					if (mainStyleItr.hasNext())
 						return true;
 				case 1:
-					if (relativeRulesItr.hasNext())
-						return true;
-				case 2:
 				default:
-					return textTransformDefsItr.hasNext();
+					return nestedStylesItr.hasNext();
 				}
 			}
 			public RuleBlock<?> next() {
@@ -105,12 +103,8 @@ public class InlineStyle implements Cloneable, Iterable<RuleBlock<?>> {
 						return mainStyleItr.next();
 					cursor++;
 				case 1:
-					if (relativeRulesItr.hasNext())
-						return relativeRulesItr.next();
-					cursor++;
-				case 2:
 				default:
-					return textTransformDefsItr.next();
+					return nestedStylesItr.next();
 				}
 			}
 			public void remove() {
@@ -119,10 +113,8 @@ public class InlineStyle implements Cloneable, Iterable<RuleBlock<?>> {
 					mainStyleItr.remove();
 					break;
 				case 1:
-					relativeRulesItr.remove();
-					break;
-				case 2:
-					textTransformDefsItr.remove();
+				default:
+					nestedStylesItr.remove();
 				}
 			}
 		};
@@ -141,12 +133,9 @@ public class InlineStyle implements Cloneable, Iterable<RuleBlock<?>> {
 				throw new InternalError("coding error"); }}
 		if (mainStyle.isPresent())
 			clone.mainStyle = new Optional<RuleMainBlock>(mainStyle.get());
-		clone.relativeRules = new ArrayList<RuleRelativeBlock>();
-		for (RuleRelativeBlock b : relativeRules)
-			clone.relativeRules.add((RuleRelativeBlock)b.clone());
-		clone.textTransformDefs = new ArrayList<RuleTextTransform>();
-		for (RuleTextTransform b : textTransformDefs)
-			clone.textTransformDefs.add((RuleTextTransform)b.clone());
+		clone.nestedStyles = new ArrayList<RuleBlock<?>>();
+		for (RuleBlock<?> b : nestedStyles)
+			clone.nestedStyles.add((RuleBlock<?>)b.clone());
 		return clone;
 	}
 	

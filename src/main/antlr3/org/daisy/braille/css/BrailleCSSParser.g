@@ -128,12 +128,8 @@ inlinestyle
 inlineset
     : relative_or_chained_selector LCURLY S* declarations RCURLY -> ^(RULE relative_or_chained_selector declarations)
     | text_transform_def
-
-// TODO: allowed as well but skip for now:
-//  | anonymous_page // page at-rule
-
-// TODO: need a slightly different format that allows @page inside @begin and @end:
-//  | volume // volume at-rule
+    | anonymous_page
+    | volume
     ;
 
 // FIXME: Note that in the braille CSS specification the second AMPERSAND is optional. This
