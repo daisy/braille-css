@@ -17,6 +17,7 @@ import cz.vutbr.web.css.RuleBlock;
 import cz.vutbr.web.css.RuleFactory;
 import cz.vutbr.web.css.RuleList;
 import cz.vutbr.web.css.RuleMargin;
+import cz.vutbr.web.css.RulePage;
 import cz.vutbr.web.css.RuleSet;
 import cz.vutbr.web.css.Selector;
 import cz.vutbr.web.css.Selector.ElementName;
@@ -91,10 +92,18 @@ volume_areas returns [List<RuleVolumeArea> list]
     ;
 
 volume_area returns [RuleVolumeArea area]
+@init {
+    List<RulePage> pages = null;
+}
     : ^( a=VOLUME_AREA
-         decl=declarations )
+         decl=declarations
+         // nested anonymous page rules allowed in case of inline style
+         (p=page {
+             if (pages == null) pages = new ArrayList<RulePage>();
+             pages.add(p);
+         })*)
       {
-        $area = preparator.prepareRuleVolumeArea(a.getText().substring(1), decl);
+        $area = preparator.prepareRuleVolumeArea(a.getText().substring(1), decl, pages);
       }
     ;
 
@@ -300,7 +309,7 @@ inlineblock returns [RuleBlock<?> b]
     ;
 
 // TODO: move to CSSTreeParser.g
-page returns [RuleBlock<?> stmnt]
+page returns [RulePage stmnt]
 @init {
     List<RuleSet> rules = null;
     List<RuleMargin> margins = null;
@@ -320,6 +329,6 @@ page returns [RuleBlock<?> stmnt]
               })*
           )
       ) {
-          $stmnt = preparator.prepareRulePage(decl, margins, null, pseudo);
+          $stmnt = (RulePage)preparator.prepareRulePage(decl, margins, null, pseudo);
       }
     ;

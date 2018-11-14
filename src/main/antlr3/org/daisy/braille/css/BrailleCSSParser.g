@@ -129,7 +129,7 @@ inlineset
     : relative_or_chained_selector LCURLY S* declarations RCURLY -> ^(RULE relative_or_chained_selector declarations)
     | text_transform_def
     | anonymous_page
-    | volume
+    | inline_volume
     ;
 
 // FIXME: Note that in the braille CSS specification the second AMPERSAND is optional. This
@@ -141,9 +141,16 @@ relative_or_chained_selector
     ;
 
 anonymous_page
-    : PAGE page_pseudo? S*
-        LCURLY S*
-        declarations margin_rule*
-        RCURLY
-        -> ^(PAGE page_pseudo? declarations ^(SET margin_rule*))
+    : PAGE page_pseudo? S* LCURLY S* declarations margin_rule* RCURLY
+      -> ^(PAGE page_pseudo? declarations ^(SET margin_rule*))
+    ;
+
+inline_volume
+    : VOLUME S* (volume_pseudo S*)? LCURLY S* declarations inline_volume_area* RCURLY
+      -> ^(VOLUME volume_pseudo? declarations ^(SET inline_volume_area*))
+    ;
+
+inline_volume_area
+    : VOLUME_AREA S* LCURLY S* declarations (anonymous_page S*)* RCURLY S*
+      -> ^(VOLUME_AREA declarations anonymous_page*)
     ;
