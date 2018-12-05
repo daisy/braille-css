@@ -160,6 +160,7 @@ inlineset
     | text_transform_def
     | anonymous_page
     | inline_volume
+    | vendor_atrule
     ;
 
 // FIXME: Note that in the braille CSS specification the second AMPERSAND is optional. This

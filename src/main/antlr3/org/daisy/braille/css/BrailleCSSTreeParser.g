@@ -329,6 +329,7 @@ inlineblock returns [RuleBlock<?> b]
     | v=volume { $b = v; }
     | pm=margin { $b = pm; }
     | va=volume_area { $b = va; }
+    | aa=any_atrule { $b = aa; }
     | ^(AMPERSAND
          (rr=relative_rule { $b = rr; }
          |p=page { $b = new InlineStyle.RuleRelativePage(p); } // relative @page pseudo rule
