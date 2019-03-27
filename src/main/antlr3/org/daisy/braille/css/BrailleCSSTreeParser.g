@@ -61,19 +61,25 @@ volume returns [RuleVolume stmnt]
 @init {
     String pseudo = null;
     String pseudoFuncArg = null;
+    CommonTree pos = null;
 }
     : ^(VOLUME
         ( ^(PSEUDOCLASS i=IDENT)
-           { pseudo = i.getText(); }
+           { pos = i; pseudo = i.getText(); }
         | ^(PSEUDOCLASS f=FUNCTION n=NUMBER)
-           { pseudo = f.getText();
+           { pos = f;
+             pseudo = f.getText();
              pseudoFuncArg = n.getText(); }
         )?
         decl=declarations
         areas=volume_areas
       )
       {
-        $stmnt = preparator.prepareRuleVolume(decl, areas, pseudo, pseudoFuncArg);
+        try {
+            $stmnt = preparator.prepareRuleVolume(decl, areas, pseudo, pseudoFuncArg);
+        } catch (IllegalArgumentException e) {
+            gCSSTreeParser.error(pos, e.getMessage());
+        }
       }
     ;
 

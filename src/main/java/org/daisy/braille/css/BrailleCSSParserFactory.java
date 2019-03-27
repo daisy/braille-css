@@ -37,7 +37,7 @@ public class BrailleCSSParserFactory extends CSSParserFactory {
 	public StyleSheet parse(Object source, NetworkProcessor network, String encoding, SourceType type,
 	                        Element inline, boolean inlinePriority, URL base) throws IOException, CSSException {
 		StyleSheet sheet = (StyleSheet)ruleFactory.createStyleSheet().unlock();
-		Preparator preparator = new Preparator(inline, inlinePriority);
+		Preparator preparator = new Preparator(inline, inlinePriority, null);
 		StyleSheet ret = parseAndImport(source, network, encoding, type, sheet, preparator, base, null);
 		return ret;
 	}
@@ -45,7 +45,7 @@ public class BrailleCSSParserFactory extends CSSParserFactory {
 	@Override
 	public StyleSheet append(Object source, NetworkProcessor network, String encoding, SourceType type,
 	                         Element inline, boolean inlinePriority, StyleSheet sheet, URL base) throws IOException, CSSException {
-		Preparator preparator = new Preparator(inline, inlinePriority);
+		Preparator preparator = new Preparator(inline, inlinePriority, null);
 		StyleSheet ret = parseAndImport(source, network, encoding, type, sheet, preparator, base, null);
 		return ret;
 	}
@@ -104,7 +104,7 @@ public class BrailleCSSParserFactory extends CSSParserFactory {
 			CommonTokenStream tokens = feedLexer(input);
 			CommonTree ast = feedParser(tokens, SourceType.INLINE, context);
 			// OK to pass null for context element because it is only used in Analyzer.evaluateDOM()
-			Preparator preparator = new Preparator(null, true);
+			Preparator preparator = new Preparator(null, true, context);
 			BrailleCSSTreeParser tparser = feedAST(tokens, ast, preparator, null);
 			return tparser.inlinestyle(); }
 		catch (IOException e) {
