@@ -154,6 +154,14 @@ inline_volumestyle
          )
     ;
 
+inline_vendor_atrulestyle
+    : S* declarations any_atrule*
+      -> ^(INLINESTYLE
+            ^(RULE declarations)
+            any_atrule*
+         )
+    ;
+
 // @Override
 inlineset
     : relative_or_chained_selector LCURLY S* declarations (anonymous_page S*)* RCURLY

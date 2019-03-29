@@ -95,7 +95,8 @@ public class BrailleCSSParserFactory extends CSSParserFactory {
 	public enum Context {
 		ELEMENT,
 		PAGE,
-		VOLUME
+		VOLUME,
+		VENDOR_RULE
 	}
 	
 	public RuleList parseInlineStyle(String style, Context context) {
@@ -128,6 +129,10 @@ public class BrailleCSSParserFactory extends CSSParserFactory {
 	
 	public RuleList parseInlineVolumeStyle(String style) {
 		return parseInlineStyle(style, Context.VOLUME);
+	}
+	
+	public RuleList parseInlineVendorAtRuleStyle(String style) {
+		return parseInlineStyle(style, Context.VENDOR_RULE);
 	}
 	
 	public List<Declaration> parseSimpleInlineStyle(String style) {
@@ -220,7 +225,9 @@ public class BrailleCSSParserFactory extends CSSParserFactory {
 				case PAGE:
 					return (CommonTree) parser.inline_pagestyle().getTree();
 				case VOLUME:
-					return (CommonTree) parser.inline_volumestyle().getTree(); }}
+					return (CommonTree) parser.inline_volumestyle().getTree();
+				case VENDOR_RULE:
+					return (CommonTree) parser.inline_vendor_atrulestyle().getTree(); }}
 			catch (RecognitionException re) {
 				throw encapsulateException(re,
 						"Unable to parse inline CSS style"); }
