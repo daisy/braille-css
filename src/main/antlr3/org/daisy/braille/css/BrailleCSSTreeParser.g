@@ -13,6 +13,7 @@ import java.util.Arrays;
 import cz.vutbr.web.css.CombinedSelector;
 import cz.vutbr.web.css.Declaration;
 import cz.vutbr.web.css.MediaQuery;
+import cz.vutbr.web.css.Rule;
 import cz.vutbr.web.css.RuleBlock;
 import cz.vutbr.web.css.RuleFactory;
 import cz.vutbr.web.css.RuleList;
@@ -258,11 +259,12 @@ relative_selector returns [CombinedSelector combinedSelector]
  * Rule with selector relative to a certain element. An ampersand indicates that the relative
  * selector should be "chained" onto the element selector (cfr. the "parent reference" in SASS).
  */
-relative_rule returns [RuleSet rs]
+relative_rule returns [RuleBlock<? extends Rule<?>> rb]
 @init {
     boolean attach = false;
     List<Selector> sel = new ArrayList<Selector>();
     boolean invalid = false;
+    List<RulePage> pages = null;
 }
     : ^(RULE
         ((s=selector) {
@@ -281,20 +283,35 @@ relative_rule returns [RuleSet rs]
             sel.add(s.setCombinator(c));
         })*
         decl=declarations
+        (p=page {
+            if (pages == null) pages = new ArrayList<RulePage>();
+            pages.add(p);
+        })*
       ) {
           if (!invalid) {
-              CombinedSelector cs = (CombinedSelector)gCSSTreeParser.rf.createCombinedSelector().unlock();
-              Selector first = (Selector)gCSSTreeParser.rf.createSelector().unlock();
-              first.add(gCSSTreeParser.rf.createElementDOM(((SimplePreparator)preparator).elem, false)); // inlinePriority does not matter
-              if (attach) {
-                  first.addAll(sel.get(0));
-                  sel.remove(0);
+              if (pages != null) {
+                  // Anonymous pages present.
+                  // We can't create a RuleSet, so this style won't be picked up by the DOM Analyzer.
+                  // Anonymous pages inside relative rules are only supported when a single style element is parsed
+                  // (when the BrailleCSSParserFactory.parseInlineStyle() function is called).
+                  InlineStyle.RuleRelativeBlock rrb = new InlineStyle.RuleRelativeBlock(sel, decl);
+                  for (RulePage rp : pages) rrb.add(rp);
+                  $rb = rrb;
+              } else {
+                  CombinedSelector cs = (CombinedSelector)gCSSTreeParser.rf.createCombinedSelector().unlock();
+                  Selector first = (Selector)gCSSTreeParser.rf.createSelector().unlock();
+                  first.add(gCSSTreeParser.rf.createElementDOM(((SimplePreparator)preparator).elem, false)); // inlinePriority does not matter
+                  if (attach) {
+                      first.addAll(sel.get(0));
+                      sel.remove(0);
+                  }
+                  cs.add(first);
+                  cs.addAll(sel);
+                  RuleSet rs = gCSSTreeParser.rf.createSet();
+                  rs.replaceAll(decl);
+                  rs.setSelectors(Arrays.asList(cs));
+                  $rb = rs;
               }
-              cs.add(first);
-              cs.addAll(sel);
-              $rs = gCSSTreeParser.rf.createSet();
-              $rs.replaceAll(decl);
-              $rs.setSelectors(Arrays.asList(cs));
           }
       }
     ;

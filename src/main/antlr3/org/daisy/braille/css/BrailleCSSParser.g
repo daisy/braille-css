@@ -156,7 +156,8 @@ inline_volumestyle
 
 // @Override
 inlineset
-    : relative_or_chained_selector LCURLY S* declarations RCURLY -> ^(AMPERSAND ^(RULE relative_or_chained_selector declarations))
+    : relative_or_chained_selector LCURLY S* declarations (anonymous_page S*)* RCURLY
+      -> ^(AMPERSAND ^(RULE relative_or_chained_selector declarations anonymous_page*))
     | text_transform_def
     | anonymous_page
     | inline_volume
