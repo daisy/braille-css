@@ -30,7 +30,9 @@ public class VendorExtensionsTest {
 	@Test
 	public void testVendorPseudoElement() throws CSSException, IOException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
-			new CSSSource("ol.toc::-obfl-on-toc-start { content: '...' }", new URL("file:///base/url/is/not/specified")),
+			new CSSSource("ol.toc::-obfl-on-toc-start { content: '...' }",
+			              (String)null,
+			              new URL("file:///base/url/is/not/specified")),
 			new DefaultCSSSourceReader());
 		Assert.assertEquals(1, sheet.size());
 		RuleSet rule = (RuleSet)sheet.get(0);
@@ -48,7 +50,9 @@ public class VendorExtensionsTest {
 	@Test
 	public void testVendorFunction() throws CSSException, IOException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
-			new CSSSource("p::after { content: -obfl-evaluate('(...)') }", new URL("file:///base/url/is/not/specified")),
+			new CSSSource("p::after { content: -obfl-evaluate('(...)') }",
+			              (String)null,
+			              new URL("file:///base/url/is/not/specified")),
 			new DefaultCSSSourceReader());
 		Assert.assertEquals(1, sheet.size());
 		RuleSet rule = (RuleSet)sheet.get(0);
@@ -64,6 +68,7 @@ public class VendorExtensionsTest {
 	public void testVendorAtRule() throws IOException, CSSException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
 			new CSSSource("@-obfl-volume-transition { @any-interrupted { content: flow(volume-end); } }",
+			              (String)null,
 			              new URL("file:///base/url/is/not/specified")),
 			new DefaultCSSSourceReader());
 		Assert.assertEquals(1, sheet.size());
@@ -81,6 +86,7 @@ public class VendorExtensionsTest {
 	public void testVendorProperty() throws CSSException, IOException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
 			new CSSSource("span { -dotify-counter-style: symbols(numeric '⠴' '⠂' '⠆' '⠒' '⠲' '⠢' '⠖' '⠶' '⠦' '⠔'); }",
+			              (String)null,
 			              new URL("file:///base/url/is/not/specified")),
 			new DefaultCSSSourceReader());
 		Assert.assertEquals(1, sheet.size());
@@ -101,7 +107,9 @@ public class VendorExtensionsTest {
 	@Test
 	public void testVendorIdentValue() throws CSSException, IOException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
-			new CSSSource("span { transform: -dotify-counter; }", new URL("file:///base/url/is/not/specified")),
+			new CSSSource("span { transform: -dotify-counter; }",
+			              (String)null,
+			              new URL("file:///base/url/is/not/specified")),
 			new DefaultCSSSourceReader());
 		Assert.assertEquals(1, sheet.size());
 		RuleSet rule = (RuleSet)sheet.get(0);

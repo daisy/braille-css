@@ -31,7 +31,9 @@ public class VolumesTest {
 	@Test
 	public void testSimpleVolumeRule() throws IOException, CSSException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
-			new CSSSource("@volume { max-length: 100; }", new URL("file:///base/url/is/not/specified")),
+			new CSSSource("@volume { max-length: 100; }",
+			              (String)null,
+			              new URL("file:///base/url/is/not/specified")),
 			new DefaultCSSSourceReader());
 		assertEquals(1, sheet.size());
 		Rule<?> rule = sheet.get(0);
@@ -47,7 +49,9 @@ public class VolumesTest {
 	@Test
 	public void testFirstVolumeRule() throws IOException, CSSException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
-			new CSSSource("@volume:first { max-length: 100; }", new URL("file:///base/url/is/not/specified")),
+			new CSSSource("@volume:first { max-length: 100; }",
+			              (String)null,
+			              new URL("file:///base/url/is/not/specified")),
 			new DefaultCSSSourceReader());
 		assertEquals(1, sheet.size());
 		Rule<?> rule = sheet.get(0);
@@ -64,7 +68,9 @@ public class VolumesTest {
 	@Test
 	public void testNthVolumeRule() throws IOException, CSSException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
-			new CSSSource("@volume:nth(2) { max-length: 100; }", new URL("file:///base/url/is/not/specified")),
+			new CSSSource("@volume:nth(2) { max-length: 100; }",
+			              (String)null,
+			              new URL("file:///base/url/is/not/specified")),
 			new DefaultCSSSourceReader());
 		assertEquals(1, sheet.size());
 		Rule<?> rule = sheet.get(0);
@@ -81,7 +87,9 @@ public class VolumesTest {
 	@Test
 	public void testVolumeRuleWithBeginArea() throws IOException, CSSException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
-			new CSSSource("@volume { max-length: 100; @begin { content: 'foo' } }", new URL("file:///base/url/is/not/specified")),
+			new CSSSource("@volume { max-length: 100; @begin { content: 'foo' } }",
+			              (String)null,
+			              new URL("file:///base/url/is/not/specified")),
 			new DefaultCSSSourceReader());
 		assertEquals(1, sheet.size());
 		Rule<?> rule = sheet.get(0);

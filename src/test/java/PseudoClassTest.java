@@ -55,7 +55,9 @@ public class PseudoClassTest {
 	@Test
 	public void testNegationPseudoClass() throws CSSException, IOException, SAXException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
-			new CSSSource(":not(.foo,.bar) { display: none }", new URL("file:///base/url/is/not/specified")),
+			new CSSSource(":not(.foo,.bar) { display: none }",
+			              (String)null,
+			              new URL("file:///base/url/is/not/specified")),
 			new DefaultCSSSourceReader());
 		assertEquals(1, sheet.size());
 		RuleSet rule = (RuleSet)sheet.get(0);
@@ -91,7 +93,9 @@ public class PseudoClassTest {
 	@Test
 	public void testRelationalPseudoClass() throws CSSException, IOException, SAXException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
-			new CSSSource(":has(.foo,.bar) { display: none }", new URL("file:///base/url/is/not/specified")),
+			new CSSSource(":has(.foo,.bar) { display: none }",
+			              (String)null,
+			              new URL("file:///base/url/is/not/specified")),
 			new DefaultCSSSourceReader());
 		assertEquals(1, sheet.size());
 		RuleSet rule = (RuleSet)sheet.get(0);
@@ -132,7 +136,9 @@ public class PseudoClassTest {
 	@Test
 	public void testNegationCombinedWithRelationalPseudoClass() throws CSSException, IOException, SAXException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
-			new CSSSource(":not(:has(:not(.foo, .bar))) { display: none }", new URL("file:///base/url/is/not/specified")),
+			new CSSSource(":not(:has(:not(.foo, .bar))) { display: none }",
+			              (String)null,
+			              new URL("file:///base/url/is/not/specified")),
 			new DefaultCSSSourceReader());
 		assertEquals(1, sheet.size());
 		RuleSet rule = (RuleSet)sheet.get(0);

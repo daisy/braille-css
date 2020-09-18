@@ -37,7 +37,9 @@ public class PseudoElementsTest {
 	@Test
 	public void testPseudoElement() throws CSSException, IOException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
-			new CSSSource("body p::after { content: 'foo' }", new URL("file:///base/url/is/not/specified")),
+			new CSSSource("body p::after { content: 'foo' }",
+			              (String)null,
+			              new URL("file:///base/url/is/not/specified")),
 			new DefaultCSSSourceReader());
 		assertEquals(1, sheet.size());
 	}
@@ -45,7 +47,9 @@ public class PseudoElementsTest {
 	@Test
 	public void testStackedPseudoElements() throws CSSException, IOException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
-			new CSSSource("p::after::before { content: 'foo' }", new URL("file:///base/url/is/not/specified")),
+			new CSSSource("p::after::before { content: 'foo' }",
+			              (String)null,
+			              new URL("file:///base/url/is/not/specified")),
 			new DefaultCSSSourceReader());
 		assertEquals(1, sheet.size());
 		RuleSet rule = (RuleSet)sheet.get(0);
@@ -71,6 +75,7 @@ public class PseudoElementsTest {
 	public void testPseudoElementWithPseudoClass() throws CSSException, IOException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
 			new CSSSource("table::table-by(row)::list-item:last-child::after { display: none }",
+			              (String)null,
 			              new URL("file:///base/url/is/not/specified")),
 			new DefaultCSSSourceReader());
 		assertEquals(1, sheet.size());
