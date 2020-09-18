@@ -10,11 +10,10 @@ import cz.vutbr.web.css.RuleSet;
 import cz.vutbr.web.css.RuleFactory;
 import cz.vutbr.web.css.Selector;
 import cz.vutbr.web.css.StyleSheet;
-import cz.vutbr.web.css.Term;
 import cz.vutbr.web.css.TermFunction;
 import cz.vutbr.web.css.TermIdent;
-import cz.vutbr.web.csskit.antlr.CSSParserFactory.SourceType;
-import cz.vutbr.web.csskit.DefaultNetworkProcessor;
+import cz.vutbr.web.csskit.antlr.CSSSource;
+import cz.vutbr.web.csskit.antlr.DefaultCSSSourceReader;
 
 import org.daisy.braille.css.AnyAtRule;
 import org.daisy.braille.css.BrailleCSSParserFactory;
@@ -31,8 +30,8 @@ public class VendorExtensionsTest {
 	@Test
 	public void testVendorPseudoElement() throws CSSException, IOException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
-			"ol.toc::-obfl-on-toc-start { content: '...' }",
-			new DefaultNetworkProcessor(), null, SourceType.EMBEDDED, new URL("file:///base/url/is/not/specified"));
+			new CSSSource("ol.toc::-obfl-on-toc-start { content: '...' }", new URL("file:///base/url/is/not/specified")),
+			new DefaultCSSSourceReader());
 		Assert.assertEquals(1, sheet.size());
 		RuleSet rule = (RuleSet)sheet.get(0);
 		List<CombinedSelector> cslist = new ArrayList<CombinedSelector>();
@@ -49,8 +48,8 @@ public class VendorExtensionsTest {
 	@Test
 	public void testVendorFunction() throws CSSException, IOException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
-			"p::after { content: -obfl-evaluate('(...)') }",
-			new DefaultNetworkProcessor(), null, SourceType.EMBEDDED, new URL("file:///base/url/is/not/specified"));
+			new CSSSource("p::after { content: -obfl-evaluate('(...)') }", new URL("file:///base/url/is/not/specified")),
+			new DefaultCSSSourceReader());
 		Assert.assertEquals(1, sheet.size());
 		RuleSet rule = (RuleSet)sheet.get(0);
 		Assert.assertEquals(1, rule.size());
@@ -64,8 +63,9 @@ public class VendorExtensionsTest {
 	@Test
 	public void testVendorAtRule() throws IOException, CSSException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
-			"@-obfl-volume-transition { @any-interrupted { content: flow(volume-end); } }",
-			new DefaultNetworkProcessor(), null, SourceType.EMBEDDED, new URL("file:///base/url/is/not/specified"));
+			new CSSSource("@-obfl-volume-transition { @any-interrupted { content: flow(volume-end); } }",
+			              new URL("file:///base/url/is/not/specified")),
+			new DefaultCSSSourceReader());
 		Assert.assertEquals(1, sheet.size());
 		AnyAtRule rule = (AnyAtRule)sheet.get(0);
 		Assert.assertEquals("-obfl-volume-transition", rule.getName());
@@ -80,8 +80,9 @@ public class VendorExtensionsTest {
 	@Test
 	public void testVendorProperty() throws CSSException, IOException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
-			"span { -dotify-counter-style: symbols(numeric '⠴' '⠂' '⠆' '⠒' '⠲' '⠢' '⠖' '⠶' '⠦' '⠔'); }",
-			new DefaultNetworkProcessor(), null, SourceType.EMBEDDED, new URL("file:///base/url/is/not/specified"));
+			new CSSSource("span { -dotify-counter-style: symbols(numeric '⠴' '⠂' '⠆' '⠒' '⠲' '⠢' '⠖' '⠶' '⠦' '⠔'); }",
+			              new URL("file:///base/url/is/not/specified")),
+			new DefaultCSSSourceReader());
 		Assert.assertEquals(1, sheet.size());
 		RuleSet rule = (RuleSet)sheet.get(0);
 		Assert.assertEquals(1, rule.size());
@@ -100,8 +101,8 @@ public class VendorExtensionsTest {
 	@Test
 	public void testVendorIdentValue() throws CSSException, IOException {
 		StyleSheet sheet = new BrailleCSSParserFactory().parse(
-			"span { transform: -dotify-counter; }",
-			new DefaultNetworkProcessor(), null, SourceType.EMBEDDED, new URL("file:///base/url/is/not/specified"));
+			new CSSSource("span { transform: -dotify-counter; }", new URL("file:///base/url/is/not/specified")),
+			new DefaultCSSSourceReader());
 		Assert.assertEquals(1, sheet.size());
 		RuleSet rule = (RuleSet)sheet.get(0);
 		Assert.assertEquals(1, rule.size());
