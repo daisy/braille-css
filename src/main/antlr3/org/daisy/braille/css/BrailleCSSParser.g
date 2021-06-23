@@ -62,7 +62,7 @@ pseudo
         MINUS? IDENT
       | NOT S!* selector (COMMA! S!* selector)* RPAREN!
       | HAS S!* relative_selector (COMMA! S!* relative_selector)* RPAREN!
-      | FUNCTION S!* (IDENT | MINUS? NUMBER | MINUS? INDEX) S!* RPAREN!
+      | MINUS? FUNCTION S!* (IDENT | MINUS? NUMBER | MINUS? INDEX) S!* RPAREN!
       )
     ;
   catch [RecognitionException re] {

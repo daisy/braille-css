@@ -150,18 +150,22 @@ any_atrule returns [AnyAtRule stmnt]
 pseudo returns [Selector.PseudoPage pseudoPage]
     : ^(PSEUDOCLASS m=MINUS? i=IDENT) {
           String name = i.getText();
-          if (m != null) name = "-" + name;
           try {
-              $pseudoPage = gCSSTreeParser.rf.createPseudoClass(name);
-          } catch (Exception e1) {
-              // maybe a single colon was used for a pseudo element, or it'a custom pseudo class,
-              // which we implement via a pseudo element
-              try {
-                  $pseudoPage = new SelectorImpl.PseudoElementImpl(":" + name);
-              } catch (Exception e2) {
-                  gCSSTreeParser.error(i, "invalid pseudo declaration :" + name);
-                  $pseudoPage = null;
+              if (m != null) {
+                  name = "-" + name;
+                  // custom pseudo class is implemented via pseudo element
+                  $pseudoPage = gCSSTreeParser.rf.createPseudoElement(":" + name);
+              } else {
+                  try {
+                      $pseudoPage = gCSSTreeParser.rf.createPseudoClass(name);
+                  } catch (Exception e) {
+                      // maybe a single colon was used for a pseudo element
+                      $pseudoPage = gCSSTreeParser.rf.createPseudoElement(":" + name);
+                  }
               }
+          } catch (Exception e) {
+              gCSSTreeParser.error(i, "invalid pseudo declaration :{}", name);
+              $pseudoPage = null;
           }
       }
     | ^(PSEUDOCLASS NOT sl=selector_list) {
@@ -170,18 +174,55 @@ pseudo returns [Selector.PseudoPage pseudoPage]
     | ^(PSEUDOCLASS HAS rsl=relative_selector_list) {
           $pseudoPage = new SelectorImpl.RelationalPseudoClassImpl(rsl);
       }
-    | ^(PSEUDOCLASS f=FUNCTION i=IDENT) {
-          $pseudoPage = gCSSTreeParser.rf.createPseudoClassFunction(f.getText(), i.getText());
+    | ^(PSEUDOCLASS m=MINUS? f=FUNCTION i=IDENT) {
+          String func = f.getText();
+          String arg = i.getText();
+          try {
+              if (m != null) {
+                  func = "-" + func;
+                  // custom pseudo class is implemented via pseudo element
+                  $pseudoPage = gCSSTreeParser.rf.createPseudoElementFunction(":" + func, arg);
+              } else {
+                  $pseudoPage = gCSSTreeParser.rf.createPseudoClassFunction(func, arg);
+              }
+          } catch (Exception e) {
+              gCSSTreeParser.error(f, "invalid pseudo declaration :{}({})", func, arg);
+              $pseudoPage = null;
+          }
       }
-    | ^(PSEUDOCLASS f=FUNCTION m=MINUS? n=NUMBER) {
-          String exp = n.getText();
-          if (m != null) exp = "-" + exp;
-              $pseudoPage = gCSSTreeParser.rf.createPseudoClassFunction(f.getText(), exp);
+    | ^(PSEUDOCLASS m1=MINUS? f=FUNCTION m2=MINUS? n=NUMBER) {
+          String func = f.getText();
+          String arg = n.getText();
+          if (m2 != null) arg = "-" + arg;
+          try {
+              if (m1 != null) {
+                  func = "-" + func;
+                  // custom pseudo class is implemented via pseudo element
+                  $pseudoPage = gCSSTreeParser.rf.createPseudoElementFunction(":" + func, arg);
+              } else {
+                  $pseudoPage = gCSSTreeParser.rf.createPseudoClassFunction(func, arg);
+              }
+          } catch (Exception e) {
+              gCSSTreeParser.error(f, "invalid pseudo declaration :{}({})", func, arg);
+              $pseudoPage = null;
+          }
       }
-    | ^(PSEUDOCLASS f=FUNCTION m=MINUS? n=INDEX) {
-          String exp = n.getText();
-          if (m != null) exp = "-" + exp;
-          $pseudoPage = gCSSTreeParser.rf.createPseudoClassFunction(f.getText(), exp);
+    | ^(PSEUDOCLASS m1=MINUS? f=FUNCTION m2=MINUS? n=INDEX) {
+          String func = f.getText();
+          String arg = n.getText();
+          if (m2 != null) arg = "-" + arg;
+          try {
+              if (m1 != null) {
+                  func = "-" + func;
+                  // custom pseudo class is implemented via pseudo element
+                  $pseudoPage = gCSSTreeParser.rf.createPseudoElementFunction(":-" + func, arg);
+              } else {
+                  $pseudoPage = gCSSTreeParser.rf.createPseudoClassFunction(func, arg);
+              }
+          } catch (Exception e) {
+              gCSSTreeParser.error(f, "invalid pseudo declaration :{}({})", func, arg);
+              $pseudoPage = null;
+          }
       }
     | ^(PSEUDOELEM m=MINUS? i=IDENT) {
           String name = i.getText();
@@ -189,37 +230,40 @@ pseudo returns [Selector.PseudoPage pseudoPage]
           try {
               $pseudoPage = gCSSTreeParser.rf.createPseudoElement(name);
           } catch (Exception e) {
-              gCSSTreeParser.error(i, "invalid pseudo declaration ::" + name);
+              gCSSTreeParser.error(i, "invalid pseudo declaration ::{}", name);
               $pseudoPage = null;
           }
       }
-    | ^(PSEUDOELEM f=FUNCTION i=IDENT) {
+    | ^(PSEUDOELEM m=MINUS? f=FUNCTION i=IDENT) {
           String func = f.getText();
+          if (m != null) func = "-" + func;
           String arg = i.getText();
           try {
               $pseudoPage = gCSSTreeParser.rf.createPseudoElementFunction(func, arg);
           } catch (Exception e) {
-            gCSSTreeParser.error(f, "invalid pseudo declaration ::{}({})", func, arg);
+              gCSSTreeParser.error(f, "invalid pseudo declaration ::{}({})", func, arg);
           }
       }
-    | ^(PSEUDOELEM f=FUNCTION m=MINUS? n=NUMBER) {
+    | ^(PSEUDOELEM m1=MINUS? f=FUNCTION m2=MINUS? n=NUMBER) {
           String func = f.getText();
-          String exp = n.getText();
-          if (m != null) exp = "-" + exp;
+          String arg = n.getText();
+          if (m1 != null) func = "-" + func;
+          if (m2 != null) arg = "-" + arg;
           try {
-              $pseudoPage = gCSSTreeParser.rf.createPseudoElementFunction(func, exp);
+              $pseudoPage = gCSSTreeParser.rf.createPseudoElementFunction(func, arg);
           } catch (Exception e) {
-              gCSSTreeParser.error(f, "invalid pseudo declaration ::{}({})", func, exp);
+              gCSSTreeParser.error(f, "invalid pseudo declaration ::{}({})", func, arg);
           }
       }
-    | ^(PSEUDOELEM f=FUNCTION m=MINUS? n=INDEX) {
+    | ^(PSEUDOELEM m1=MINUS? f=FUNCTION m2=MINUS? n=INDEX) {
           String func = f.getText();
-          String exp = n.getText();
-          if (m != null) exp = "-" + exp;
+          String arg = n.getText();
+          if (m1 != null) func = "-" + func;
+          if (m2 != null) arg = "-" + arg;
           try {
-              $pseudoPage = gCSSTreeParser.rf.createPseudoElementFunction(f.getText(), exp);
+              $pseudoPage = gCSSTreeParser.rf.createPseudoElementFunction(f.getText(), arg);
           } catch (Exception e) {
-              gCSSTreeParser.error(f, "invalid pseudo declaration ::{}({})", func, exp);
+              gCSSTreeParser.error(f, "invalid pseudo declaration ::{}({})", func, arg);
           }
       }
     ;
@@ -272,7 +316,7 @@ relative_rule returns [RuleBlock<? extends Rule<?>> rb]
         ((s=selector) {
             attach = true;
             // may not start with a type selector
-            if (s.size() > 0 && s.get(0) instanceof ElementName) {
+            if (s == null || (s.size() > 0 && s.get(0) instanceof ElementName)) {
                 invalid = true;
             }
             sel.add(s);
