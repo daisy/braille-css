@@ -49,11 +49,12 @@ import cz.vutbr.web.csskit.antlr.SimplePreparator;
 }
 
 // @Override
-// Added volume and text_transform_def
+// Added volume, text_transform_def and counter_style_def
 unknown_atrule returns [RuleBlock<?> stmnt]
 @init { $stmnt = null; }
     : (v=volume) { $stmnt = v; }
     | (tt=text_transform_def) { $stmnt = tt; }
+    | (cs=counter_style_def) { $stmnt = cs; }
     | (aar=any_atrule) { $stmnt = aar; }
     | INVALID_ATSTATEMENT { gCSSTreeParser.debug("Skipping invalid at statement"); }
     ;
@@ -121,6 +122,12 @@ text_transform_def returns [RuleTextTransform def]
       }
     | ^( TEXT_TRANSFORM decl=declarations ) {
           $def = preparator.prepareRuleTextTransform(decl);
+      }
+    ;
+
+counter_style_def returns [RuleCounterStyle def]
+    : ^( COUNTER_STYLE n=IDENT decl=declarations ) {
+          $def = preparator.prepareRuleCounterStyle(n.getText(), decl);
       }
     ;
 
@@ -396,6 +403,7 @@ inlineblock returns [RuleBlock<?> b]
           $b = preparator.prepareInlineRuleSet(decl, null);
       }
     | tt=text_transform_def { $b = tt; }
+    | cs=counter_style_def { $b = cs; }
     | p=page { $b = p; }
     | v=volume { $b = v; }
     | pm=margin { $b = pm; }
