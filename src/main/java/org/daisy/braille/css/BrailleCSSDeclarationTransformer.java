@@ -16,6 +16,7 @@ import org.daisy.braille.css.BrailleCSSProperty.BorderAlign;
 import org.daisy.braille.css.BrailleCSSProperty.BorderPattern;
 import org.daisy.braille.css.BrailleCSSProperty.BorderStyle;
 import org.daisy.braille.css.BrailleCSSProperty.BorderWidth;
+import org.daisy.braille.css.BrailleCSSProperty.BrailleCharset;
 import org.daisy.braille.css.BrailleCSSProperty.Content;
 import org.daisy.braille.css.BrailleCSSProperty.Display;
 import org.daisy.braille.css.BrailleCSSProperty.Flow;
@@ -307,6 +308,12 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
 		Repeater r = new BorderWidthRepeater();
 		return r.repeatOverFourTermDeclaration(d, properties, values);
+	}
+	
+	@SuppressWarnings("unused")
+	private boolean processBrailleCharset(Declaration d,
+			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
+		return genericOneIdent(BrailleCharset.class, d, properties);
 	}
 	
 	private final static Set<String> validContentFuncNames
