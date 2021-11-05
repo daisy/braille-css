@@ -255,6 +255,33 @@ public interface BrailleCSSProperty extends CSSProperty {
 		}
 	}
 	
+	public enum HyphenateCharacter implements BrailleCSSProperty {
+		braille_string(""), AUTO("auto"), INHERIT("inherit"), INITIAL("initial");
+
+		private String text;
+
+		private HyphenateCharacter(String text) {
+			this.text = text;
+		}
+
+		public boolean inherited() {
+			return true;
+		}
+
+		public boolean equalsInherit() {
+			return this == INHERIT;
+		}
+
+		public boolean equalsInitial() {
+			return this == INITIAL;
+		}
+
+		@Override
+		public String toString() {
+			return text;
+		}
+	}
+	
 	public enum Hyphens implements BrailleCSSProperty {
 		NONE("none"), AUTO("auto"), MANUAL("manual"), INHERIT("inherit"),
 		INITIAL("initial");

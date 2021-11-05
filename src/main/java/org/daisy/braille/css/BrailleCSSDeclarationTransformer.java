@@ -21,6 +21,7 @@ import org.daisy.braille.css.BrailleCSSProperty.Content;
 import org.daisy.braille.css.BrailleCSSProperty.Display;
 import org.daisy.braille.css.BrailleCSSProperty.Flow;
 import org.daisy.braille.css.BrailleCSSProperty.GenericVendorCSSPropertyProxy;
+import org.daisy.braille.css.BrailleCSSProperty.HyphenateCharacter;
 import org.daisy.braille.css.BrailleCSSProperty.Hyphens;
 import org.daisy.braille.css.BrailleCSSProperty.LetterSpacing;
 import org.daisy.braille.css.BrailleCSSProperty.LineHeight;
@@ -375,6 +376,22 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
 		return genericOneIdentOrIdentifier(Flow.class, Flow.identifier, true,
 				d, properties, values);
+	}
+	
+	@SuppressWarnings("unused")
+	private boolean processHyphenateCharacter(Declaration d,
+			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
+		if (d.size() != 1)
+			return false;
+		Term<?> term = d.get(0);
+		String prop = d.getProperty();
+		if (genericTermIdent(HyphenateCharacter.class, term, ALLOW_INH, prop, properties))
+			return true;
+		else if (TermString.class.isInstance(term)) {
+			properties.put(prop, HyphenateCharacter.braille_string);
+			values.put(prop, term);
+			return true; }
+		return false;
 	}
 	
 	@SuppressWarnings("unused")
