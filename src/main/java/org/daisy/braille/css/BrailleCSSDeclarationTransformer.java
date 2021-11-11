@@ -77,11 +77,11 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 						Declaration.class, Map.class, Map.class);
 					map.put(property, m);
 				} catch (Exception e2) {
-					log.warn("Unable to find method for property {}.", property);
+					log.debug("Unable to find method for property {}.", property);
 				}
 			}
 		}
-		log.info("Totally found {} parsing methods", map.size());
+		log.debug("Totally found {} parsing methods", map.size());
 		return map;
 	}
 	
