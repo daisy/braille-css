@@ -10,6 +10,7 @@ import CSSTreeParser;
 @header {
 package org.daisy.braille.css;
 import java.util.Arrays;
+import java.util.Map;
 import cz.vutbr.web.css.CombinedSelector;
 import cz.vutbr.web.css.Declaration;
 import cz.vutbr.web.css.MediaQuery;
@@ -29,8 +30,8 @@ import cz.vutbr.web.csskit.antlr.SimplePreparator;
 @members {
     private Preparator preparator;
     
-    public void init(Preparator preparator, List<MediaQuery> wrapMedia, RuleFactory ruleFactory) {
-        gCSSTreeParser.init(preparator, wrapMedia);
+    public void init(Preparator preparator, List<MediaQuery> wrapMedia, RuleFactory ruleFactory, Map<String,String> namespaces) {
+        gCSSTreeParser.init(preparator, wrapMedia, namespaces);
         gCSSTreeParser.rf = ruleFactory;
         this.preparator = preparator;
     }
