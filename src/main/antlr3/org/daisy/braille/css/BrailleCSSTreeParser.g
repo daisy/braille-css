@@ -177,10 +177,10 @@ pseudo returns [Selector.PseudoPage pseudoPage]
           }
       }
     | ^(PSEUDOCLASS NOT sl=selector_list) {
-          $pseudoPage = new SelectorImpl.NegationPseudoClassImpl(sl);
+          $pseudoPage = sl == null ? null : new SelectorImpl.NegationPseudoClassImpl(sl);
       }
     | ^(PSEUDOCLASS HAS rsl=relative_selector_list) {
-          $pseudoPage = new SelectorImpl.RelationalPseudoClassImpl(rsl);
+          $pseudoPage = rsl == null ? null : new SelectorImpl.RelationalPseudoClassImpl(rsl);
       }
     | ^(PSEUDOCLASS m=MINUS? f=FUNCTION i=IDENT) {
           String func = f.getText();
@@ -285,15 +285,33 @@ pseudo returns [Selector.PseudoPage pseudoPage]
 selector_list returns [List<Selector> list]
 @init {
     $list = new ArrayList<Selector>();
+    boolean invalid = false;
 }
-    : (s=selector { list.add(s); })+
+@after {
+    if (invalid) $list = null;
+}
+    : (s=selector {
+          if (s == null)
+              invalid = true;
+          else
+              list.add(s);
+      })+
     ;
 
 relative_selector_list returns [List<CombinedSelector> list]
 @init {
     $list = new ArrayList<CombinedSelector>();
+    boolean invalid = false;
 }
-    : (s=relative_selector { list.add(s); })+
+@after {
+    if (invalid) $list = null;
+}
+    : (s=relative_selector {
+          if (s == null)
+              invalid = true;
+          else
+              list.add(s);
+      })+
     ;
 
 /*
@@ -305,8 +323,17 @@ relative_selector_list returns [List<CombinedSelector> list]
 relative_selector returns [CombinedSelector combinedSelector]
 @init {
     $combinedSelector = (CombinedSelector)gCSSTreeParser.rf.createCombinedSelector().unlock();
+    boolean invalid = false;
 }
-    : ASTERISK (c=combinator s=selector { combinedSelector.add(s.setCombinator(c)); })+
+@after {
+    if (invalid) $combinedSelector = null;
+}
+    : ASTERISK (c=combinator s=selector {
+          if (s == null)
+              invalid = true;
+          else
+              combinedSelector.add(s.setCombinator(c));
+      })+
     ;
 
 /*
