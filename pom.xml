@@ -29,7 +29,7 @@
       <dependency>
         <groupId>org.daisy.libs</groupId>
         <artifactId>jstyleparser</artifactId>
-        <version>1.20-p17</version>
+        <version>1.20-p19</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
