@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import cz.vutbr.web.css.CSSFactory;
 import cz.vutbr.web.css.CSSProperty;
 import cz.vutbr.web.css.Declaration;
 import cz.vutbr.web.css.NodeData;
@@ -17,10 +16,8 @@ import cz.vutbr.web.domassign.SingleMapNodeData;
 public class SimpleInlineStyle extends SingleMapNodeData implements NodeData, Cloneable, Iterable<PropertyValue> {
 	
 	private final static SupportedCSS cssInstance = new SupportedBrailleCSS();
-	private static BrailleCSSDeclarationTransformer transformerInstance; static {
-		// SupportedCSS injected via CSSFactory in DeclarationTransformer.<init>
-		CSSFactory.registerSupportedCSS(cssInstance);
-		transformerInstance = new BrailleCSSDeclarationTransformer(); }
+	private static BrailleCSSDeclarationTransformer transformerInstance
+		= new BrailleCSSDeclarationTransformer(cssInstance);
 	private final static BrailleCSSParserFactory parserFactory = new BrailleCSSParserFactory();
 	
 	public static final SimpleInlineStyle EMPTY = new SimpleInlineStyle((List<Declaration>)null);
@@ -40,14 +37,10 @@ public class SimpleInlineStyle extends SingleMapNodeData implements NodeData, Cl
 	}
 	
 	public SimpleInlineStyle(List<Declaration> declarations, SimpleInlineStyle parentStyle) {
-		super();
-		transformer = transformerInstance;
-		css = cssInstance;
+		super(transformerInstance, cssInstance);
 		if (declarations != null)
-			for (Declaration d : declarations) {
-				// SupportedCSS injected via CSSFactory in Repeater.assignDefaults, Variator.assignDefaults
-				CSSFactory.registerSupportedCSS(css);
-				push(d); }
+			for (Declaration d : declarations)
+				push(d);
 		if (parentStyle != null)
 			inheritFrom(parentStyle);
 	}

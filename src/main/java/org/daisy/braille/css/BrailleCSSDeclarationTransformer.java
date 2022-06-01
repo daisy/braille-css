@@ -43,6 +43,7 @@ import org.daisy.braille.css.BrailleCSSProperty.WordSpacing;
 
 import cz.vutbr.web.css.CSSProperty;
 import cz.vutbr.web.css.Declaration;
+import cz.vutbr.web.css.SupportedCSS;
 import cz.vutbr.web.css.Term;
 import cz.vutbr.web.css.TermFunction;
 import cz.vutbr.web.css.TermIdent;
@@ -59,7 +60,11 @@ import cz.vutbr.web.domassign.Variator;
 public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 	
 	public BrailleCSSDeclarationTransformer() {
-		super();
+		this(new SupportedBrailleCSS());
+	}
+	
+	public BrailleCSSDeclarationTransformer(SupportedCSS css) {
+		super(css);
 	}
 	
 	protected Map<String, Method> parsingMethods() {
@@ -770,7 +775,7 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 	private final class MarginRepeater extends Repeater {
 
 		public MarginRepeater() {
-			super(4);
+			super(4, css);
 			type = Margin.class;
 			names.add("margin-top");
 			names.add("margin-right");
@@ -790,7 +795,7 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 	private final class PaddingRepeater extends Repeater {
 			
 		public PaddingRepeater() {
-			super(4);
+			super(4, css);
 			type = Padding.class;
 			names.add("padding-top");
 			names.add("padding-right");
@@ -810,7 +815,7 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 	private final class BorderStyleRepeater extends Repeater {
 		
 		public BorderStyleRepeater() {
-			super(4);
+			super(4, css);
 			this.type = BorderStyle.class;
 			names.add("border-top-style");
 			names.add("border-right-style");
@@ -829,7 +834,7 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 	private final class BorderAlignRepeater extends Repeater {
 		
 		public BorderAlignRepeater() {
-			super(4);
+			super(4, css);
 			this.type = BorderAlign.class;
 			names.add("border-top-align");
 			names.add("border-right-align");
@@ -848,7 +853,7 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 	private final class BorderWidthRepeater extends Repeater {
 		
 		public BorderWidthRepeater() {
-			super(4);
+			super(4, css);
 			this.type = BorderWidth.class;
 			names.add("border-top-width");
 			names.add("border-right-width");
@@ -879,7 +884,7 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 		private List<Repeater> repeaters;
 		
 		public BorderVariator() {
-			super(3);
+			super(3, css);
 			types.add(BorderWidth.class);
 			types.add(BorderStyle.class);
 			types.add(BorderAlign.class);
@@ -943,7 +948,7 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 		private final String borderPatternName;
 		
 		public BorderSideVariator(String side) {
-			super(3);
+			super(3, css);
 			names.add("border-" + side + "-align");
 			types.add(BorderAlign.class);
 			names.add("border-" + side + "-style");
