@@ -556,6 +556,33 @@ public interface BrailleCSSProperty extends CSSProperty {
 		}
 	}
 
+	public enum Size implements BrailleCSSProperty {
+		integer_pair(""), AUTO("auto"), INHERIT("inherit"), INITIAL("initial");
+
+		private String text;
+
+		private Size(String text) {
+			this.text = text;
+		}
+
+		public boolean inherited() {
+			return false;
+		}
+
+		public boolean equalsInherit() {
+			return this == INHERIT;
+		}
+
+		public boolean equalsInitial() {
+			return this == INITIAL;
+		}
+
+		@Override
+		public String toString() {
+			return text;
+		}
+	}
+
 	public enum StringSet implements BrailleCSSProperty {
 		list_values(""), NONE("none"), INHERIT("inherit"), INITIAL("initial");
 		

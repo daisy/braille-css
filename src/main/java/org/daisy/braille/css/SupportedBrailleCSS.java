@@ -41,6 +41,7 @@ import org.daisy.braille.css.BrailleCSSProperty.MinLength;
 import org.daisy.braille.css.BrailleCSSProperty.Padding;
 import org.daisy.braille.css.BrailleCSSProperty.Page;
 import org.daisy.braille.css.BrailleCSSProperty.RenderTableBy;
+import org.daisy.braille.css.BrailleCSSProperty.Size;
 import org.daisy.braille.css.BrailleCSSProperty.StringSet;
 import org.daisy.braille.css.BrailleCSSProperty.TableHeaderPolicy;
 import org.daisy.braille.css.BrailleCSSProperty.TextIndent;
@@ -60,7 +61,7 @@ public class SupportedBrailleCSS implements SupportedCSS {
 	
 	private static Logger log = LoggerFactory.getLogger(SupportedBrailleCSS.class);
 	
-	private static final int TOTAL_SUPPORTED_DECLARATIONS = 69;
+	private static final int TOTAL_SUPPORTED_DECLARATIONS = 70;
 	
 	private static final TermFactory tf = CSSFactory.getTermFactory();
 	
@@ -231,6 +232,9 @@ public class SupportedBrailleCSS implements SupportedCSS {
 		// elements
 		setProperty("list-style-type", ListStyleType.NONE);
 		setProperty("list-style", allowShorthandProperties, ListStyleType.NONE);
+		
+		// @page rule
+		setProperty("size", Size.AUTO);
 		
 		// paged
 		setProperty("page", Page.AUTO);

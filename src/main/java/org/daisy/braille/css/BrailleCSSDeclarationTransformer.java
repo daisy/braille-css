@@ -32,6 +32,7 @@ import org.daisy.braille.css.BrailleCSSProperty.MinLength;
 import org.daisy.braille.css.BrailleCSSProperty.Padding;
 import org.daisy.braille.css.BrailleCSSProperty.Page;
 import org.daisy.braille.css.BrailleCSSProperty.RenderTableBy;
+import org.daisy.braille.css.BrailleCSSProperty.Size;
 import org.daisy.braille.css.BrailleCSSProperty.StringSet;
 import org.daisy.braille.css.BrailleCSSProperty.TableHeaderPolicy;
 import org.daisy.braille.css.BrailleCSSProperty.TextIndent;
@@ -583,6 +584,33 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
 		return genericOneIdentOrInteger(AbsoluteMargin.class, AbsoluteMargin.integer, true,
 				d, properties, values);
+	}
+	
+	@SuppressWarnings("unused")
+	private boolean processSize(Declaration d,
+			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
+		if (d.size() == 1 && genericOneIdent(StringSet.class, d, properties))
+			return true;
+		TermInteger width = null;
+		TermInteger height = null;
+		for (Term<?> t : d.asList()) {
+			if (height != null || !(t instanceof TermInteger)) {
+				return false;
+			} else if (width == null) {
+				width = (TermInteger)t;
+			} else {
+				height = (TermInteger)t;
+			}
+		}
+		if (height == null) {
+			return false;
+		}
+		TermList size = tf.createList(2);
+		size.add(width);
+		size.add(height);
+		properties.put("size", Size.integer_pair);
+		values.put("size", size);
+		return true;
 	}
 	
 	@SuppressWarnings("unused")
