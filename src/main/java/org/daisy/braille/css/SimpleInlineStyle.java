@@ -11,13 +11,13 @@ import cz.vutbr.web.css.Declaration;
 import cz.vutbr.web.css.NodeData;
 import cz.vutbr.web.css.SupportedCSS;
 import cz.vutbr.web.css.Term;
+import cz.vutbr.web.domassign.DeclarationTransformer;
 import cz.vutbr.web.domassign.SingleMapNodeData;
 
 public class SimpleInlineStyle extends SingleMapNodeData implements NodeData, Cloneable, Iterable<PropertyValue> {
 	
-	private final static SupportedCSS cssInstance = new SupportedBrailleCSS();
-	private static BrailleCSSDeclarationTransformer transformerInstance
-		= new BrailleCSSDeclarationTransformer(cssInstance);
+	private final static SupportedCSS cssInstance = new SupportedBrailleCSS(true, false);
+	private static DeclarationTransformer transformerInstance = new BrailleCSSDeclarationTransformer(cssInstance);
 	private final static BrailleCSSParserFactory parserFactory = new BrailleCSSParserFactory();
 	
 	public static final SimpleInlineStyle EMPTY = new SimpleInlineStyle((List<Declaration>)null);
@@ -37,7 +37,12 @@ public class SimpleInlineStyle extends SingleMapNodeData implements NodeData, Cl
 	}
 	
 	public SimpleInlineStyle(List<Declaration> declarations, SimpleInlineStyle parentStyle) {
-		super(transformerInstance, cssInstance);
+		this(declarations, parentStyle, transformerInstance, cssInstance);
+	}
+	
+	public SimpleInlineStyle(List<Declaration> declarations, SimpleInlineStyle parentStyle,
+	                         DeclarationTransformer transformer, SupportedCSS css) {
+		super(transformer, css);
 		if (declarations != null)
 			for (Declaration d : declarations)
 				push(d);
