@@ -457,7 +457,11 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 			return true;
 		else
 			try {
-				if (TermString.class.isInstance(term)) {
+				if (term instanceof TermIdent) {
+					properties.put(propertyName, ListStyleType.counter_style_name);
+					values.put(propertyName, term);
+					return true; }
+				else if (TermString.class.isInstance(term)) {
 					properties.put(propertyName, ListStyleType.braille_string);
 					values.put(propertyName, term);
 					return true; }
