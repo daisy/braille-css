@@ -36,6 +36,7 @@ import org.daisy.braille.css.BrailleCSSProperty.LetterSpacing;
 import org.daisy.braille.css.BrailleCSSProperty.LineHeight;
 import org.daisy.braille.css.BrailleCSSProperty.ListStyleType;
 import org.daisy.braille.css.BrailleCSSProperty.Margin;
+import org.daisy.braille.css.BrailleCSSProperty.MaxHeight;
 import org.daisy.braille.css.BrailleCSSProperty.MaxLength;
 import org.daisy.braille.css.BrailleCSSProperty.MinLength;
 import org.daisy.braille.css.BrailleCSSProperty.Padding;
@@ -243,6 +244,9 @@ public class SupportedBrailleCSS implements SupportedCSS {
 		setProperty("page-break-inside", PageBreakInside.AUTO);
 		setProperty("orphans", Orphans.integer, DEFAULT_UA_ORPHANS);
 		setProperty("widows", Widows.integer, DEFAULT_UA_WIDOWS);
+		
+		// @footnotes rule
+		setProperty("max-height", MaxHeight.NONE);
 		
 		// @volume rule
 		setProperty("min-length", MinLength.AUTO);

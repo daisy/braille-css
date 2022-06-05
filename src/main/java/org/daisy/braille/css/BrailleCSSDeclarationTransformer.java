@@ -27,6 +27,7 @@ import org.daisy.braille.css.BrailleCSSProperty.LetterSpacing;
 import org.daisy.braille.css.BrailleCSSProperty.LineHeight;
 import org.daisy.braille.css.BrailleCSSProperty.ListStyleType;
 import org.daisy.braille.css.BrailleCSSProperty.Margin;
+import org.daisy.braille.css.BrailleCSSProperty.MaxHeight;
 import org.daisy.braille.css.BrailleCSSProperty.MaxLength;
 import org.daisy.braille.css.BrailleCSSProperty.MinLength;
 import org.daisy.braille.css.BrailleCSSProperty.Padding;
@@ -502,6 +503,13 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
 		Repeater r = new MarginRepeater();
 		return r.repeatOverFourTermDeclaration(d, properties, values);
+	}
+	
+	@SuppressWarnings("unused")
+	private boolean processMaxHeight(Declaration d,
+			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
+		return genericOneIdentOrInteger(MaxHeight.class, MaxHeight.integer, false,
+				d, properties, values);
 	}
 	
 	@SuppressWarnings("unused")
