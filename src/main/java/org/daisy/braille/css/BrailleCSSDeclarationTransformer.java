@@ -331,7 +331,7 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 	private final static Pattern customContentFuncName = Pattern.compile("^-.*"); // is the rest handled in ANTLR?
 	
 	@SuppressWarnings("unused")
-	private boolean processContent(Declaration d,
+	protected boolean processContent(Declaration d,
 			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
 
 		if (d.size() == 1 && genericOneIdent(Content.class, d, properties))
@@ -626,7 +626,7 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 	}
 	
 	@SuppressWarnings("unused")
-	private boolean processStringSet(Declaration d,
+	protected boolean processStringSet(Declaration d,
 			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
 		
 		if (d.size() == 1 && genericOneIdent(StringSet.class, d, properties))
@@ -687,8 +687,7 @@ public class BrailleCSSDeclarationTransformer extends DeclarationTransformer {
 				d, properties, values);
 	}
 	
-	@SuppressWarnings("unused")
-	private boolean processTextTransform(Declaration d,
+	protected boolean processTextTransform(Declaration d,
 			Map<String, CSSProperty> properties, Map<String, Term<?>> values) {
 		
 		if (d.size() == 1 && genericOneIdent(TextTransform.class, d, properties))
